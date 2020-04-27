@@ -27,7 +27,7 @@ Gao Wang, Abhishek Sarkar, Peter Carbonetto, Matthew Stephens. A simple new appr
 `
 python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ld_file=LD_MATRIX --out_dir=OUTPUT_DIR --out_name=OUTPUT_FILENAME [--n_sig=NUMBER_OF_SIGNALS --level=LEVEL --min_purity=MINIMUM_PURITY --pval_thresh=MARGINAL_PVAL_THRESHOLD --max_iter=MAXIMUM_ITERATIONS --tol=TOLERANCE]
 `
-- SUM_STATS_FILE (required): Full paths and the file names of the GWAS summary statistics, separated by comma.
+- SUM_STATS_FILE (required): Full paths and file names of the GWAS summary statistics, separated by comma.
 
 - GWAS_SAMPLE_SIZE (required): Sample sizes of the GWAS, in the order corresponding to the GWAS summary statistics files, separated by comma.
 
