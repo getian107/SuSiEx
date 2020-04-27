@@ -59,11 +59,11 @@ Otherwise, the `.summary` file contains the following columns:
 
 - CS_ID: ID of the credible set.
 
-- CS_LENGTH: size (number of SNPs) of the credible set.
+- CS_LENGTH: Size (number of SNPs) of the credible set.
 
-- CS_PURITY: purity of the credible set.
+- CS_PURITY: Purity of the credible set.
 
-- MAX_PIP: maximum posterior inclusion probability (PIP) in the credible set.
+- MAX_PIP: Maximum posterior inclusion probability (PIP) in the credible set.
 
 The `.cs` file contains the following columns:
 
@@ -71,9 +71,9 @@ The `.cs` file contains the following columns:
 
 - SNP: SNP identifier.
 
-- CS_PIP: posterior inclusion probability (PIP) of the SNP.
+- CS_PIP: Posterior inclusion probability (PIP) of the SNP.
 
-- OVRL_PIP: posterior inclusion probability (PIP) of the SNP in any of the credible set.
+- OVRL_PIP: Posterior inclusion probability (PIP) of the SNP in any of the credible set.
 
 
 ## Example
