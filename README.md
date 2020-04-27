@@ -79,11 +79,16 @@ The `.cs` file contains the following columns:
 ## Example
 
 `
-python SuSiEx.py \ 
-    --sst_file=${sst_eur},${sst_afr} \ 
-    --n_gwas=${n_eur},${n_afr} \ 
-    --ld_file=${ld_eur},${ld_afr} \ 
-    --out_dir=${out_dir} \ 
+python SuSiEx.py \
+
+    --sst_file=${sst_eur},${sst_afr} \
+    
+    --n_gwas=${n_eur},${n_afr} \
+    
+    --ld_file=${ld_eur},${ld_afr} \
+    
+    --out_dir=${out_dir} \
+    
     --out_name=${out_name}
 `
 
