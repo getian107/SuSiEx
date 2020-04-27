@@ -11,7 +11,7 @@ Gao Wang, Abhishek Sarkar, Peter Carbonetto, Matthew Stephens. A simple new appr
    
     `git clone https://github.com/getian107/SuSiEx.git`
 
-    Alternatively, download the source files from the github website (`https://github.com/getian107/SuSiEx`).
+    Alternatively, download the source files from the github website (https://github.com/getian107/SuSiEx).
     
 - **SuSiEx** requires Python packages **scipy** (https://www.scipy.org/) installed.
 
