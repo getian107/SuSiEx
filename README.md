@@ -50,6 +50,45 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ld_file=L
 - TOLERANCE (optional): Tolerance for the convergence of the variational algorithm. Default is 1e-04.
 
 
+## Output
+
+A `.summary` file and a `.cs` file will be written to the specified output directory.
+If the varitional algorithm did not converge, "FAIL" will be written to both files.
+If no credible set was identified at the specified coverage level, "NULL" will be written to both files.
+Otherwise, the `.summary` file contains the following columns:
+
+- CS_ID: ID of the credible set.
+
+- CS_LENGTH: size (number of SNPs) of the credible set.
+
+- CS_PURITY: purity of the credible set.
+
+- MAX_PIP: maximum posterior inclusion probability (PIP) in the credible set.
+
+The `.cs` file contains the following columns:
+
+- CS_ID: ID of the credible set.
+
+- SNP: SNP identifier.
+
+- CS_PIP: posterior inclusion probability (PIP) of the SNP.
+
+- OVRL_PIP: posterior inclusion probability (PIP) of the SNP in any of the credible set.
 
 
+## Example
+
+`
+python SuSiEx.py \
+    --sst_file=${sst_eur},${sst_afr} \
+    --n_gwas=${n_eur},${n_afr} \
+    --ld_file=${ld_eur},${ld_afr} \
+    --out_dir=${out_dir} \
+    --out_name=${out_name}
+`
+
+
+## Support
+
+Please direct questions or bug reports to Tian Ge (tge1@mgh.harvard.edu).
 
