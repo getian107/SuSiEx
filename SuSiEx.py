@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 """
 SuSiEx: trans-ethnic fine-mapping
 
@@ -11,9 +10,11 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ld_file=L
 
 """
 
+
 import sys
 import getopt
 
+import parse_genet
 import parse_genet_sim
 import SuSiE
 import parse_pip
@@ -23,10 +24,12 @@ import scipy as sp
 
 def parse_param():
     long_opts_list = ['sst_file=', 'n_gwas=', 'ld_file=', 'out_dir=', 'out_name=',
-		      'n_sig=', 'level=', 'min_purity=', 'pval_thresh=', 'max_iter=', 'tol=', 'help']
+		      'n_sig=', 'level=', 'min_purity=', 'pval_thresh=', 'max_iter=', 'tol=',
+		      'sim=', 'ref_file=', 'help']
 
     param_dict = {'sst_file': None, 'n_gwas': None, 'ld_file': None, 'out_dir': None, 'out_name': None,
-		  'n_sig': 10, 'level': 0.95, 'min_purity': 0.5, 'pval_thresh': 1e-5, 'max_iter': 100, 'tol': 1e-4}
+		  'n_sig': 10, 'level': 0.95, 'min_purity': 0.5, 'pval_thresh': 1e-5, 'max_iter': 100, 'tol': 1e-4,
+		  'sim': 'True', 'ref_file': None}
 
     print('\n')
 
@@ -53,6 +56,8 @@ def parse_param():
             elif opt == "--pval_thresh": param_dict['pval_thresh'] = float(arg)
             elif opt == "--max_iter": param_dict['max_iter'] = int(arg)
             elif opt == "--tol": param_dict['tol'] = float(arg)
+            elif opt == "--sim": param_dict['sim'] = arg
+	    elif opt == "--ref_file": param_dict['ref_file'] = arg.split(',')
     else:
         print(__doc__)
         sys.exit(0)
@@ -89,15 +94,33 @@ def main():
     param_dict = parse_param()
     n_pop = len(param_dict['sst_file'])
 
-    sst_dict = {}
-    for pp in range(n_pop):
-        sst_dict[pp] = parse_genet_sim.parse_sumstats(param_dict['sst_file'][pp], param_dict['n_gwas'][pp])
+    if param_dict['sim'] == 'False':
+        ref_dict = {}
+        for pp in range(n_pop):
+            ref_dict[pp] = parse_genet.parse_ref(param_dict['ref_file'][pp])
 
-    ld_dict = {}
-    for pp in range(n_pop):
-        ld_dict[pp] = parse_genet_sim.parse_ld(param_dict['ld_file'][pp])
+        sst_dict = {}
+        for pp in range(n_pop):
+            sst_dict[pp] = parse_genet.parse_sumstats(param_dict['sst_file'][pp], ref_dict[pp], param_dict['n_gwas'][pp])
 
-    snp_dict, beta, tau_sq, pval_min, ind, ld = parse_genet_sim.align_sumstats(sst_dict, ld_dict, n_pop)    
+        ld_dict = {}
+        for pp in range(n_pop):
+            ld_dict[pp] = parse_genet.parse_ld(param_dict['ld_file'][pp], ref_dict[pp], sst_dict[pp])
+
+        snp_dict, beta, tau_sq, pval_min, ind, ld = parse_genet.align_sumstats(sst_dict, ld_dict, n_pop)
+
+    else:
+        print('### Simulation Mode ###')
+
+        sst_dict = {}
+        for pp in range(n_pop):
+            sst_dict[pp] = parse_genet_sim.parse_sumstats(param_dict['sst_file'][pp], param_dict['n_gwas'][pp])
+
+        ld_dict = {}
+        for pp in range(n_pop):
+            ld_dict[pp] = parse_genet_sim.parse_ld(param_dict['ld_file'][pp])
+
+        snp_dict, beta, tau_sq, pval_min, ind, ld = parse_genet_sim.align_sumstats(sst_dict, ld_dict, n_pop)
 
 
     alpha, b, b_sq, sigma_sq, elbo_new, n_iter, flag = \

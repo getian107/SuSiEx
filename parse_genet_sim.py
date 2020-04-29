@@ -62,25 +62,22 @@ def align_sumstats(sst_dict, ld_dict, n_pop):
 
     snp_dict = {}
     snp_dict['SNP'] = sst_dict[0]['SNP']
+    n_snp = len(snp_dict['SNP'])
 
-    beta = sst_dict[0]['BETA']
-    for pp in range(1,n_pop):
-        beta = sp.hstack((beta,sst_dict[pp]['BETA']))
+    beta = sp.zeros((n_snp,n_pop))
+    pval = sp.zeros((n_snp,n_pop))
+    ind = sp.zeros((n_snp,n_pop), dtype=bool)
+    ld = sp.zeros((n_snp,n_snp,n_pop))
+
+    for pp in range(n_pop):
+        beta[:,pp,None] = sst_dict[pp]['BETA']
+        pval[:,pp,None] = sst_dict[pp]['P']
+        ind[:,pp,None] = sst_dict[pp]['MISS']
+        ld[:,:,pp] = ld_dict[pp]
+
     tau_sq = sp.amax(beta**2,axis=0)
-
-    pval = sst_dict[0]['P']
-    for pp in range(1,n_pop):
-        pval = sp.hstack((pval,sst_dict[pp]['P']))
     pval_min = sp.amin(pval,axis=1).reshape(len(pval),1)
-
-    ind = sst_dict[0]['MISS']
-    for pp in range(1,n_pop):
-        ind = sp.hstack((ind,sst_dict[pp]['MISS']))
-
-    ld = ld_dict[0]
-    for pp in range(1,n_pop):
-        ld = sp.dstack((ld,ld_dict[pp]))
-
+    
     return snp_dict, beta, tau_sq, pval_min, ind, ld
 
 
