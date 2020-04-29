@@ -57,7 +57,7 @@ def parse_param():
             elif opt == "--max_iter": param_dict['max_iter'] = int(arg)
             elif opt == "--tol": param_dict['tol'] = float(arg)
             elif opt == "--sim": param_dict['sim'] = arg
-	    elif opt == "--ref_file": param_dict['ref_file'] = arg.split(',')
+            elif opt == "--ref_file": param_dict['ref_file'] = arg.split(',')
     else:
         print(__doc__)
         sys.exit(0)
