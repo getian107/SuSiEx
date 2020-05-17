@@ -40,7 +40,7 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=
 
 - GWAS_SAMPLE_SIZE (required): Sample sizes of the GWAS, in the order corresponding to the GWAS summary statistics files, separated by comma.
 
-- REF_FILE (required): LD reference panels in PLINK binary format (.bed/.bim/.fam), in the order corresponding to the GWAS summary statistics files, separated by comma. The format for SNP IDs (e.g., rs IDs or chr:bp:a1:a2) must be consistent across GWAS summary statistics files and reference panels.
+- REF_FILE (required): Full paths and filenames of the LD reference panels in PLINK binary format (.bed/.bim/.fam), in the order corresponding to the GWAS summary statistics files, separated by comma. The format for SNP IDs (e.g., rs IDs or chr:bp:a1:a2) must be consistent across GWAS summary statistics files and reference panels.
 
 - LD_MATRIX_FILE (required): Full paths and filename prefix of the LD matrices to be computed from reference panels, in the order corresponding to the GWAS summary statistics files, separated by comma.
 
