@@ -24,20 +24,53 @@ Gao Wang, Abhishek Sarkar, Peter Carbonetto, Matthew Stephens. A simple new appr
 
 ## Using SuSiEx
 
-### Simulation mode:
+### Simulation mode (will be removed in formal release):
 
 `
-python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ld_file=LD_MATRIX --out_dir=OUTPUT_DIR --out_name=OUTPUT_FILENAME [--n_sig=NUMBER_OF_SIGNALS --level=LEVEL --min_purity=MINIMUM_PURITY --pval_thresh=MARGINAL_PVAL_THRESHOLD --max_iter=MAXIMUM_ITERATIONS --tol=TOLERANCE --sim=SIMULATION_MODE]
+python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ld_file=LD_MATRIX_FILE --out_dir=OUTPUT_DIR --out_name=OUTPUT_FILENAME --sim=True [--n_sig=NUMBER_OF_SIGNALS --level=LEVEL --min_purity=MINIMUM_PURITY --pval_thresh=MARGINAL_PVAL_THRESHOLD --max_iter=MAXIMUM_ITERATIONS --tol=TOLERANCE]
 `
-- SUM_STATS_FILE (required): Full paths and file names of the GWAS summary statistics, separated by comma.
+
+### Non-simulation mode:
+
+`
+python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=REF_FILE --ld_file=LD_MATRIX_FILE --out_dir=OUTPUT_DIR --out_name=OUTPUT_FILENAME --sim=False --chr=CHR --bp=BP --chr_col=CHR_COL --snp_col=SNP_COL --bp_col=BP_COL --a1_col=A1_COL --a2_col=A2_COL --eff_col=EFF_COL --pval_col=PVAL_COL --plink=PLINK --maf=MAF_THRESHOLD [--n_sig=NUMBER_OF_SIGNALS --level=LEVEL --min_purity=MINIMUM_PURITY --pval_thresh=MARGINAL_PVAL_THRESHOLD --max_iter=MAXIMUM_ITERATIONS --tol=TOLERANCE]
+`
+
+- SUM_STATS_FILE (required): Full paths and filenames of the GWAS summary statistics, separated by comma. Each file must contain a header line. The column corresponding to the estimated effect size must have a header of BETA or OR.
 
 - GWAS_SAMPLE_SIZE (required): Sample sizes of the GWAS, in the order corresponding to the GWAS summary statistics files, separated by comma.
 
-- LD_MATRIX (required): Full paths and file names of the LD matrices computed from reference panels, in the order corresponding to the GWAS summary statistics files, separated by comma.
+- REF_FILE (required): LD reference panels in PLINK binary format, in the order corresponding to the GWAS summary statistics files, separated by comma. The format for SNP IDs (e.g., rs IDs or chr:bp:a1:a2) must be consistent across GWAS summary statistics files and reference panels.
+
+- LD_MATRIX_FILE (required): Full paths and prefix of the LD matrices computed from reference panels, in the order corresponding to the GWAS summary statistics files, separated by comma.
 
 - OUTPUT_DIR (required): Output directory.
 
 - OUTPUT_FILENAME (required): Prefix of the output files.
+
+- SIMULATION_MODE (temporary): --sim=True indicates that input files are simulated data (i.e., \*assoc.linear and \*ld). Default is True.
+
+- CHR (required): Chromosome of the fine-mapping region.
+
+- BP (required): The start and end base pair coordinate of the fine-mapping region, separated by comma.
+
+- CHR_COL (required): The column number of the chromosome code in each GWAS summary statistics file, separated by comma.
+
+- SNP_COL (required): The column number of the SNP IDs in each GWAS summary statistics file, separated by comma.
+
+- BP_COL (required): The column number of the base pair coordinate in each GWAS summary statistics file, separated by comma.
+
+- A1_COL (required): The column number of the A1 allele in each GWAS summary statistics file, separated by comma.
+
+- A2_COL (required): The column number of the A2 allele in each GWAS summary statistics file, separated by comma.
+
+- EFF_COL (required): The column number of the effect size estimate (beta or odds ratio) in each GWAS summary statistics file, separated by comma.
+
+- PVAL_COL (required): The column number of the p-value in each GWAS summary statistics file, separated by comma.
+
+- PLINK (required): The full path and filename of PLINK.
+
+- MAF_THRESHOLD (required): Minor allele frequency threshold (MAF) applied to the reference panel. Default is 0.005.
 
 - NUMBER_OF_SIGNALS (optional): Maximum number of causal signals in the SuSiEx model. Default is 10.
 
@@ -50,8 +83,6 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ld_file=L
 - MAXIMUM_ITERATIONS (optional): Maximum number of iterations allowed for the model fitting algorithm. Default is 100.
 
 - TOLERANCE (optional): Tolerance for the convergence of the variational algorithm. Default is 1e-04.
-
-- SIMULATION_MODE (temporary): --sim=True indicates that input files are simulated data (i.e., \*assoc.linear and \*ld). Default is True.
 
 
 ## Output
