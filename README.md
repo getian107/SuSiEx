@@ -129,8 +129,8 @@ python SuSiEx.py \
     --bp_col=3,3 \
     --a1_col=4,4 \
     --a2_col=5,5 \
-    --eff_col=6,6 \
-    --pval_col=7,7 \
+    --eff_col=8,8 \
+    --pval_col=10,10 \
     --maf=0.01 \
     --plink=${plink_dir}/plink_v1.90
 ```
