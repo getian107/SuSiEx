@@ -24,6 +24,8 @@ Gao Wang, Abhishek Sarkar, Peter Carbonetto, Matthew Stephens. A simple new appr
 
 ## Using SuSiEx
 
+### Simulation mode:
+
 `
 python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ld_file=LD_MATRIX --out_dir=OUTPUT_DIR --out_name=OUTPUT_FILENAME [--n_sig=NUMBER_OF_SIGNALS --level=LEVEL --min_purity=MINIMUM_PURITY --pval_thresh=MARGINAL_PVAL_THRESHOLD --max_iter=MAXIMUM_ITERATIONS --tol=TOLERANCE --sim=SIMULATION_MODE]
 `
