@@ -36,13 +36,13 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ld_file=L
 python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=REF_FILE --ld_file=LD_MATRIX_FILE --out_dir=OUTPUT_DIR --out_name=OUTPUT_FILENAME --sim=False --chr=CHR --bp=BP --chr_col=CHR_COL --snp_col=SNP_COL --bp_col=BP_COL --a1_col=A1_COL --a2_col=A2_COL --eff_col=EFF_COL --pval_col=PVAL_COL --plink=PLINK --maf=MAF_THRESHOLD [--n_sig=NUMBER_OF_SIGNALS --level=LEVEL --min_purity=MINIMUM_PURITY --pval_thresh=MARGINAL_PVAL_THRESHOLD --max_iter=MAXIMUM_ITERATIONS --tol=TOLERANCE]
 `
 
-- SUM_STATS_FILE (required): Full paths and filenames of the GWAS summary statistics, separated by comma. Each file must contain a header line. The column corresponding to the estimated effect size must have a header of BETA or OR.
+- SUM_STATS_FILE (required): Full paths and filenames of the GWAS summary statistics, separated by comma. Each file must contain a header line. The column corresponding to the estimated effect size must have a header of BETA or OR, indicating whether the effect estimate is regression coefficient or odds ratio.
 
 - GWAS_SAMPLE_SIZE (required): Sample sizes of the GWAS, in the order corresponding to the GWAS summary statistics files, separated by comma.
 
-- REF_FILE (required): LD reference panels in PLINK binary format, in the order corresponding to the GWAS summary statistics files, separated by comma. The format for SNP IDs (e.g., rs IDs or chr:bp:a1:a2) must be consistent across GWAS summary statistics files and reference panels.
+- REF_FILE (required): LD reference panels in PLINK binary format (.bed/.bim/.fam), in the order corresponding to the GWAS summary statistics files, separated by comma. The format for SNP IDs (e.g., rs IDs or chr:bp:a1:a2) must be consistent across GWAS summary statistics files and reference panels.
 
-- LD_MATRIX_FILE (required): Full paths and prefix of the LD matrices computed from reference panels, in the order corresponding to the GWAS summary statistics files, separated by comma.
+- LD_MATRIX_FILE (required): Full paths and filename prefix of the LD matrices to be computed from reference panels, in the order corresponding to the GWAS summary statistics files, separated by comma.
 
 - OUTPUT_DIR (required): Output directory.
 
@@ -70,7 +70,7 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=
 
 - PLINK (required): The full path and filename of PLINK.
 
-- MAF_THRESHOLD (required): Minor allele frequency threshold (MAF) applied to the reference panel. Default is 0.005.
+- MAF_THRESHOLD (optional): Minor allele frequency (MAF) threshold applied to the reference panel. Default is 0.005.
 
 - NUMBER_OF_SIGNALS (optional): Maximum number of causal signals in the SuSiEx model. Default is 10.
 
@@ -115,11 +115,24 @@ The `.cs` file contains the following columns:
 
 ```
 python SuSiEx.py \
-    --sst_file=${sst_eur},${sst_afr} \   
-    --n_gwas=${n_eur},${n_afr} \    
-    --ld_file=${ld_eur},${ld_afr} \   
-    --out_dir=${out_dir} \   
-    --out_name=${out_name}
+    --sst_file=${sst_eur},${sst_afr} \
+    --n_gwas=${n_eur},${n_afr} \
+    --ref_file=${ref_eur},${ref_afr} \
+    --ld_file=${ld_eur},${ld_afr} \
+    --out_dir=${out_dir} \
+    --out_name=${out_name} \
+    --sim=False \
+    --chr=1 \
+    --bp=94813205,95812998 \
+    --chr_col=1,1 \
+    --snp_col=2,2 \
+    --bp_col=3,3 \
+    --a1_col=4,4 \
+    --a2_col=5,5 \
+    --eff_col=6,6 \
+    --pval_col=7,7 \
+    --maf=0.01 \
+    --plink=${plink_dir}/plink_v1.90
 ```
 
 
