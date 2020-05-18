@@ -13,7 +13,7 @@ Gao Wang, Abhishek Sarkar, Peter Carbonetto, Matthew Stephens. A simple new appr
 
     Alternatively, download the source files from the github website (https://github.com/getian107/SuSiEx).
     
-- **SuSiEx** requires Python packages **scipy** (https://www.scipy.org/) installed.
+- **SuSiEx** requires Python package **scipy** (https://www.scipy.org/) installed.
 
 - Once Python and its dependencies have been installed, running
 
