@@ -8,27 +8,46 @@ Parse GWAS summary statistics and LD matrices
 
 import scipy as sp
 from scipy.stats import norm
+import subprocess
 
 
-def parse_ref(ref_file):
-    print('... parse reference file: %s ...' % (ref_file + '.bim'))
+def parse_ref(ref_file, chrom, bp):
+    print('... parse reference file: %s ...' % (ref_file+'.bim'))
 
     ref_dict = {'CHR':[], 'SNP':[], 'BP':[], 'A1':[], 'A2':[]}
-    with open(ref_file + '.bim') as ff:
+    with open(ref_file+'.bim') as ff:
         for line in ff:
             ll = (line.strip()).split()
-            ref_dict['CHR'].append(ll[0])
-            ref_dict['SNP'].append(ll[1])
-            ref_dict['BP'].append(int(ll[3]))
-            ref_dict['A1'].append(ll[4])
-            ref_dict['A2'].append(ll[5])
+            if int(ll[0]) == chrom and int(ll[3]) >= bp[0] and int(ll[3]) <= bp[1]:
+                ref_dict['CHR'].append(int(ll[0]))
+                ref_dict['SNP'].append(ll[1])
+                ref_dict['BP'].append(int(ll[3]))
+                ref_dict['A1'].append(ll[4])
+                ref_dict['A2'].append(ll[5])
 
-    print('... %d SNPs read from %s ...' % (len(ref_dict['SNP']), ref_file))
+    print('... %d SNPs in the fine-mapping region read from %s ...' % (len(ref_dict['SNP']), ref_file+'.bim'))
 
     return ref_dict
 
 
-def parse_sumstats(sst_file, ref_dict, n_subj):
+def calc_ld(ref_file, ref_dict, ld_file, plink, chrom, maf):
+    print('... calculate LD matrix: %s ...' % (ld_file+'.ld'))
+
+    with open(ld_file+'.snp', 'w') as ff:
+        for ll in range(len(ref_dict['SNP'])):
+            ff.write('%s\n' % ref_dict['SNP'][ll])
+
+    cmd = '%s --bfile %s --keep-allele-order --chr %d --extract %s --maf %f --make-bed --out %s' \
+        % (plink, ref_file, chrom, ld_file+'.snp', maf, ld_file+'_ref')
+
+    subprocess.check_output(cmd, shell=True)
+
+    cmd = '%s --bfile %s --keep-allele-order --r square --out %s' %(plink, ld_file+'_ref', ld_file)
+
+    subprocess.check_output(cmd, shell=True)
+
+
+def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_col, a2_col, eff_col, pval_col, n_subj):
     print('... parse sumstats file: %s ...' % sst_file)
 
     sst_dict = {'SNP':[], 'A1':[], 'A2':[]}
@@ -36,11 +55,12 @@ def parse_sumstats(sst_file, ref_dict, n_subj):
         header = next(ff)
         for line in ff:
             ll = (line.strip()).split()
-            sst_dict['SNP'].append(ll[0])
-            sst_dict['A1'].append(ll[1])
-            sst_dict['A2'].append(ll[2])
+            if int(ll[chr_col-1]) == chrom and int(ll[bp_col-1]) >= bp[0] and int(ll[bp_col-1]) <= bp[1]:
+                sst_dict['SNP'].append(ll[snp_col-1])
+                sst_dict['A1'].append(ll[a1_col-1])
+                sst_dict['A2'].append(ll[a2_col-1])
 
-    print('... %d SNPs read from %s ...' % (len(sst_dict['SNP']), sst_file))
+    print('... %d SNPs in the fine-mapping region read from %s ...' % (len(sst_dict['SNP']), sst_file))
 
 
     mapping = {'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G'}
@@ -66,42 +86,42 @@ def parse_sumstats(sst_file, ref_dict, n_subj):
         header = [col.upper() for col in header]
         for line in ff:
             ll = (line.strip()).split()
-            snp = ll[0]; a1 = ll[1]; a2 = ll[2]
-            if a1 not in ATGC or a2 not in ATGC:
+            chr = int(ll[chr_col-1]); snp = ll[snp_col-1]; a1 = ll[a1_col-1]; a2 = ll[a2_col-1]
+            if chr != chrom or a1 not in ATGC or a2 not in ATGC:
                 continue
 
             if (snp, a1, a2) in comm_snp or (snp, mapping[a1], mapping[a2]) in comm_snp:
-                if ll[3] == 'NA' or ll[4] == 'NA':
+                if ll[eff_col-1] == 'NA' or ll[pval_col-1] == 'NA':
                     sst_eff.update({snp: 0.0})
                     sst_pval.update({snp: 1.0})
                     sst_miss.update({snp: True})
                 else:
-                    if 'BETA' in header:
-                        beta = float(ll[3])
-                    elif 'OR' in header:
-                        beta = sp.log(float(ll[3]))
+                    if header[eff_col-1] == 'BETA':
+                        beta = float(ll[eff_col-1])
+                    elif header[eff_col-1] == 'OR':
+                        beta = sp.log(float(ll[eff_col-1]))
 
-                    pval = max(float(ll[4]), 1e-323)
+                    pval = max(float(ll[pval_col-1]), 1e-323)
 
                     sst_eff.update({snp: sp.sign(beta)*abs(norm.ppf(pval/2.0))/n_sqrt})
                     sst_pval.update({snp: pval})
                     sst_miss.update({snp: False})
             elif (snp, a2, a1) in comm_snp or (snp, mapping[a2], mapping[a1]) in comm_snp:
-                if ll[3] == 'NA' or ll[4] == 'NA':
+                if ll[eff_col-1] == 'NA' or ll[pval_col-1] == 'NA':
                     sst_eff.update({snp: 0.0})
                     sst_pval.update({snp: 1.0})
                     sst_miss.update({snp: True})
                 else:
-                    if 'BETA' in header:
-                        beta = float(ll[3])
-                    elif 'OR' in header:
-                        beta = sp.log(float(ll[3]))
+                    if header[eff_col-1] == 'BETA':
+                        beta = float(ll[eff_col-1])
+                    elif header[eff_col-1] == 'OR':
+                        beta = sp.log(float(ll[eff_col-1]))
 
-                    pval = max(float(ll[4]), 1e-323)
+                    pval = max(float(ll[pval_col-1]), 1e-323)
 
                     sst_eff.update({snp: -1*sp.sign(beta)*abs(norm.ppf(pval/2.0))/n_sqrt})
                     sst_pval.update({snp: pval})
-                    sst_miss.update({snp: False})                    
+                    sst_miss.update({snp: False})
 
 
     sst_dict = {'CHR':[], 'SNP':[], 'BP':[], 'A1':[], 'A2':[], 'BETA':[], 'P':[], 'MISS':[]}
@@ -135,7 +155,7 @@ def parse_ld(ld_file, ref_dict, sst_dict):
     for ii in range(n_snp):
         ld[ii,ii] = 1.0
 
-    idx = [ii for (ii, snp) in enumerate(ref_dict['SNP']) if snp in sst_dict['SNP']]
+    idx = [ii for (ii,snp) in enumerate(ref_dict['SNP']) if snp in sst_dict['SNP']]
     if len(idx) != 0:
         ld = ld[sp.ix_(idx,idx)]
     else:
@@ -150,7 +170,7 @@ def align_sumstats(sst_dict, ld_dict, n_pop):
     print('... align summary statistics and LD references across populations ...')
 
     snp = []
-    for pp in range(1,n_pop):
+    for pp in range(n_pop):
         snp = list(set(snp+sst_dict[pp]['SNP']))
 
     n_snp = len(snp)
@@ -166,11 +186,16 @@ def align_sumstats(sst_dict, ld_dict, n_pop):
     snp_dict = {}
     snp_dict['SNP'] = [snp[jj] for jj in idx]
 
+    print('... a total of %d SNPs across populations ...' % len(snp_dict['SNP']))
+
 
     beta = sp.zeros((n_snp,n_pop))
-    pval = sp.zeros((n_snp,n_pop))
-    ind = sp.zeros((n_snp,n_pop), dtype=bool)
+    pval = sp.ones((n_snp,n_pop))
+    ind = sp.ones((n_snp,n_pop), dtype=bool)
     ld = sp.zeros((n_snp,n_snp,n_pop))
+    for pp in range(n_pop):
+        for ii in range(n_snp):
+            ld[ii,ii,pp] = 1.0
 
     for pp in range(n_pop):
         idx = [jj for jj in range(n_snp) if snp_dict['SNP'][jj] in sst_dict[pp]['SNP']]
@@ -185,5 +210,15 @@ def align_sumstats(sst_dict, ld_dict, n_pop):
     pval_min = sp.amin(pval,axis=1).reshape(len(pval),1)
 
     return snp_dict, beta, tau_sq, pval_min, ind, ld
+
+
+def clean_files(ld_file):
+    subprocess.check_output('rm '+ld_file+'.snp', shell=True)
+    subprocess.check_output('rm '+ld_file+'_ref.bed', shell=True)
+    subprocess.check_output('rm '+ld_file+'_ref.bim', shell=True)
+    subprocess.check_output('rm '+ld_file+'_ref.fam', shell=True)
+    subprocess.check_output('rm '+ld_file+'_ref.log', shell=True)
+    subprocess.check_output('rm '+ld_file+'.ld', shell=True)
+    subprocess.check_output('rm '+ld_file+'.log', shell=True)
 
 
