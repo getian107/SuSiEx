@@ -15,9 +15,9 @@ Non-simulation mode:
 
 python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=REF_FILE --ld_file=LD_MATRIX_FILE --out_dir=OUTPUT_DIR --out_name=OUTPUT_FILENAME --sim=False
                  --chr=CHR --bp=BP --chr_col=CHR_COL --snp_col=SNP_COL --bp_col=BP_COL --a1_col=A1_COL --a2_col=A2_COL
-                 --eff_col=EFF_COL --pval_col=PVAL_COL --plink=PLINK --maf=MAF_THRESHOLD
-                 [--n_sig=NUMBER_OF_SIGNALS --level=LEVEL --min_purity=MINIMUM_PURITY --pval_thresh=MARGINAL_PVAL_THRESHOLD
-                  --max_iter=MAXIMUM_ITERATIONS --tol=TOLERANCE]
+                 --eff_col=EFF_COL --pval_col=PVAL_COL --plink=PLINK
+		 [--keep-ambig=KEEP_AMBIGUOUS_SNPS --maf=MAF_THRESHOLD --n_sig=NUMBER_OF_SIGNALS --level=LEVEL --min_purity=MINIMUM_PURITY
+		  --pval_thresh=MARGINAL_PVAL_THRESHOLD --max_iter=MAXIMUM_ITERATIONS --tol=TOLERANCE]
 
 """
 
@@ -36,12 +36,12 @@ import scipy as sp
 def parse_param():
     long_opts_list = ['sst_file=', 'n_gwas=', 'ref_file=', 'ld_file=', 'out_dir=', 'out_name=', 'sim=',
                       'chr=', 'bp=', 'chr_col=', 'snp_col=', 'bp_col=', 'a1_col=', 'a2_col=',
-                      'eff_col=', 'pval_col=', 'plink=', 'maf=',
-		      'n_sig=', 'level=', 'min_purity=', 'pval_thresh=', 'max_iter=', 'tol', 'help']
+                      'eff_col=', 'pval_col=', 'plink=', 'keep-ambig=', 'maf=',
+		      'n_sig=', 'level=', 'min_purity=', 'pval_thresh=', 'max_iter=', 'tol=', 'help']
 
     param_dict = {'sst_file': None, 'n_gwas': None, 'ref_file': None, 'ld_file': None, 'out_dir': None, 'out_name': None, 'sim': 'True',
                   'chr': None, 'bp': None, 'chr_col': None, 'snp_col': None, 'bp_col': None, 'a1_col': None, 'a2_col': None,
-                  'eff_col': None, 'pval_col': None, 'plink': None, 'maf': 0.005,
+                  'eff_col': None, 'pval_col': None, 'plink': None, 'keep-ambig': 'False', 'maf': 0.005,
 		  'n_sig': 10, 'level': 0.95, 'min_purity': 0.5, 'pval_thresh': 1e-5, 'max_iter': 100, 'tol': 1e-4}
 
     print('\n')
@@ -75,6 +75,7 @@ def parse_param():
             elif opt == "--eff_col": param_dict['eff_col'] = map(int, arg.split(','))
             elif opt == "--pval_col": param_dict['pval_col'] = map(int, arg.split(','))
             elif opt == "--plink": param_dict['plink'] = arg
+            elif opt == "--keep-ambig": param_dict['keep-ambig'] = arg
             elif opt == "--maf": param_dict['maf'] = float(arg)
             elif opt == "--n_sig": param_dict['n_sig'] = int(arg)
             elif opt == "--level": param_dict['level'] = float(arg)
@@ -143,6 +144,11 @@ def parse_param():
         elif param_dict['plink'] == None:
             print('* Please provide the directory and filename of PLINK using --plink\n')
             sys.exit(2)
+        elif param_dict['keep-ambig'] == 'False':
+            print('* All ambiguous SNPs will be removed\n')
+        elif param_dict['keep-ambig'] == 'True':
+            print('* Ambiguous SNPs will be retained if A1/A2 in the summary statistics match A1/A2 in the reference panel; ' +
+                     'Use --keep-ambig=False to remove all ambiguous SNPs if not certain about allele matching between summary statistics and the reference\n')
 
 
     for key in param_dict:
@@ -172,7 +178,7 @@ def main():
         for pp in range(n_pop):
             sst_dict[pp] = parse_genet.parse_sumstats(param_dict['sst_file'][pp], ref_dict[pp], param_dict['chr'], param_dict['bp'],
                            param_dict['chr_col'][pp], param_dict['snp_col'][pp], param_dict['bp_col'][pp], param_dict['a1_col'][pp], param_dict['a2_col'][pp],
-                           param_dict['eff_col'][pp], param_dict['pval_col'][pp], param_dict['n_gwas'][pp])
+                           param_dict['eff_col'][pp], param_dict['pval_col'][pp], param_dict['n_gwas'][pp], param_dict['keep-ambig'])
 
         ld_dict = {}
         for pp in range(n_pop):

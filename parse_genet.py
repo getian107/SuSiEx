@@ -47,7 +47,7 @@ def calc_ld(ref_file, ref_dict, ld_file, plink, chrom, maf):
     subprocess.check_output(cmd, shell=True)
 
 
-def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_col, a2_col, eff_col, pval_col, n_subj):
+def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_col, a2_col, eff_col, pval_col, n_subj, ambig):
     print('... parse sumstats file: %s ...' % sst_file)
 
     sst_dict = {'SNP':[], 'A1':[], 'A2':[]}
@@ -74,8 +74,6 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
 
     comm_snp = ref_snp & sst_snp
 
-    print('... %d common SNPs in the reference and sumstats ...' % len(comm_snp))
-
 
     n_sqrt = sp.sqrt(n_subj)
     sst_eff = {}
@@ -90,7 +88,25 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
             if chr != chrom or a1 not in ATGC or a2 not in ATGC:
                 continue
 
-            if (snp, a1, a2) in comm_snp or (snp, mapping[a1], mapping[a2]) in comm_snp:
+            if (a1=='A' and a2=='T') or (a1=='T' and a2=='A') or (a1=='G' and a2=='C') or (a1=='C' and a2=='G'):
+                if ambig == 'True' and (snp, a1, a2) in comm_snp:
+                    if ll[eff_col-1] == 'NA' or ll[pval_col-1] == 'NA':
+                        sst_eff.update({snp: 0.0})
+                        sst_pval.update({snp: 1.0})
+                        sst_miss.update({snp: True})
+                    else:
+                        if header[eff_col-1] == 'BETA':
+                            beta = float(ll[eff_col-1])
+                        elif header[eff_col-1] == 'OR':
+                            beta = sp.log(float(ll[eff_col-1]))
+
+                        pval = max(float(ll[pval_col-1]), 1e-323)
+
+                        sst_eff.update({snp: sp.sign(beta)*abs(norm.ppf(pval/2.0))/n_sqrt})
+                        sst_pval.update({snp: pval})
+                        sst_miss.update({snp: False})
+
+            elif (snp, a1, a2) in comm_snp or (snp, mapping[a1], mapping[a2]) in comm_snp:
                 if ll[eff_col-1] == 'NA' or ll[pval_col-1] == 'NA':
                     sst_eff.update({snp: 0.0})
                     sst_pval.update({snp: 1.0})
@@ -106,6 +122,7 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
                     sst_eff.update({snp: sp.sign(beta)*abs(norm.ppf(pval/2.0))/n_sqrt})
                     sst_pval.update({snp: pval})
                     sst_miss.update({snp: False})
+
             elif (snp, a2, a1) in comm_snp or (snp, mapping[a2], mapping[a1]) in comm_snp:
                 if ll[eff_col-1] == 'NA' or ll[pval_col-1] == 'NA':
                     sst_eff.update({snp: 0.0})
@@ -139,6 +156,8 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
     sst_dict['BETA'] = sp.array(sst_dict['BETA'], ndmin=2).T
     sst_dict['P'] = sp.array(sst_dict['P'], ndmin=2).T
     sst_dict['MISS'] = sp.array(sst_dict['MISS'], ndmin=2).T
+
+    print('... %d common SNPs in the reference and sumstats ...' % len(sst_dict['SNP']))
 
     return sst_dict
 
