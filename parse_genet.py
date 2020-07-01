@@ -11,40 +11,54 @@ from scipy.stats import norm
 import subprocess
 
 
-def parse_ref(ref_file, chrom, bp):
-    print('... parse reference file: %s ...' % (ref_file+'.bim'))
+def calc_ld(ref_file, ld_file, plink, chrom, bp, maf):
+    print('... calculate LD matrix: %s ...' % (ld_file+'.ld'))
 
-    ref_dict = {'CHR':[], 'SNP':[], 'BP':[], 'A1':[], 'A2':[]}
+    SNP = []
     with open(ref_file+'.bim') as ff:
         for line in ff:
             ll = (line.strip()).split()
             if int(ll[0]) == chrom and int(ll[3]) >= bp[0] and int(ll[3]) <= bp[1]:
-                ref_dict['CHR'].append(int(ll[0]))
-                ref_dict['SNP'].append(ll[1])
-                ref_dict['BP'].append(int(ll[3]))
-                ref_dict['A1'].append(ll[4])
-                ref_dict['A2'].append(ll[5])
+                SNP.append(ll[1])
+
+    with open(ld_file+'.snp', 'w') as ff:
+        for ll in range(len(SNP)):
+            ff.write('%s\n' % SNP[ll])
+
+
+    cmd = '%s --bfile %s --keep-allele-order --chr %d --extract %s --maf %f --make-bed --out %s' \
+        % (plink, ref_file, chrom, ld_file+'.snp', maf, ld_file+'_ref')
+    subprocess.check_output(cmd, shell=True)
+
+    cmd = '%s --bfile %s --keep-allele-order --r square --out %s' %(plink, ld_file+'_ref', ld_file)
+    subprocess.check_output(cmd, shell=True)
+
+    cmd = '%s --bfile %s --keep-allele-order --freq --out %s' %(plink, ld_file+'_ref', ld_file+'_frq')
+    subprocess.check_output(cmd, shell=True)
+
+
+def parse_ref(ref_file, ld_file_ref, ld_file_frq):
+    print('... parse reference file: %s ...' % (ref_file+'.bim'))
+
+    ref_dict = {'CHR':[], 'SNP':[], 'BP':[], 'A1':[], 'A2':[], 'FRQ':[]}
+    with open(ld_file_ref+'.bim') as ff:
+        for line in ff:
+            ll = (line.strip()).split()
+            ref_dict['CHR'].append(int(ll[0]))
+            ref_dict['SNP'].append(ll[1])
+            ref_dict['BP'].append(int(ll[3]))
+            ref_dict['A1'].append(ll[4])
+            ref_dict['A2'].append(ll[5])
+
+    with open(ld_file_frq+'.frq') as ff:
+        header = next(ff)
+        for line in ff:
+            ll = (line.strip()).split()
+            ref_dict['FRQ'].append(ll[4])
 
     print('... %d SNPs in the fine-mapping region read from %s ...' % (len(ref_dict['SNP']), ref_file+'.bim'))
 
     return ref_dict
-
-
-def calc_ld(ref_file, ref_dict, ld_file, plink, chrom, maf):
-    print('... calculate LD matrix: %s ...' % (ld_file+'.ld'))
-
-    with open(ld_file+'.snp', 'w') as ff:
-        for ll in range(len(ref_dict['SNP'])):
-            ff.write('%s\n' % ref_dict['SNP'][ll])
-
-    cmd = '%s --bfile %s --keep-allele-order --chr %d --extract %s --maf %f --make-bed --out %s' \
-        % (plink, ref_file, chrom, ld_file+'.snp', maf, ld_file+'_ref')
-
-    subprocess.check_output(cmd, shell=True)
-
-    cmd = '%s --bfile %s --keep-allele-order --r square --out %s' %(plink, ld_file+'_ref', ld_file)
-
-    subprocess.check_output(cmd, shell=True)
 
 
 def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_col, a2_col, eff_col, pval_col, n_subj, ambig):
@@ -237,6 +251,8 @@ def clean_files(ld_file):
     subprocess.check_output('rm '+ld_file+'_ref.bim', shell=True)
     subprocess.check_output('rm '+ld_file+'_ref.fam', shell=True)
     subprocess.check_output('rm '+ld_file+'_ref.log', shell=True)
+    subprocess.check_output('rm '+ld_file+'_frq.frq', shell=True)
+    subprocess.check_output('rm '+ld_file+'_frq.log', shell=True)
     subprocess.check_output('rm '+ld_file+'.ld', shell=True)
     subprocess.check_output('rm '+ld_file+'.log', shell=True)
 

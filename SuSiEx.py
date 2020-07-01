@@ -163,16 +163,12 @@ def main():
     n_pop = len(param_dict['sst_file'])
 
     if param_dict['sim'] == 'False':
-        ref_dict = {}
         for pp in range(n_pop):
-            ref_dict[pp] = parse_genet.parse_ref(param_dict['ref_file'][pp], param_dict['chr'], param_dict['bp'])
-
-        for pp in range(n_pop):
-            parse_genet.calc_ld(param_dict['ref_file'][pp], ref_dict[pp], param_dict['ld_file'][pp], param_dict['plink'], param_dict['chr'], param_dict['maf'])
+            parse_genet.calc_ld(param_dict['ref_file'][pp], param_dict['ld_file'][pp], param_dict['plink'], param_dict['chr'], param_dict['bp'], param_dict['maf'])
 
         ref_dict = {}
         for pp in range(n_pop):
-            ref_dict[pp] = parse_genet.parse_ref(param_dict['ld_file'][pp]+'_ref', param_dict['chr'], param_dict['bp'])
+            ref_dict[pp] = parse_genet.parse_ref(param_dict['ref_file'][pp], param_dict['ld_file'][pp]+'_ref', param_dict['ld_file'][pp]+'_frq')
 
         sst_dict = {}
         for pp in range(n_pop):
