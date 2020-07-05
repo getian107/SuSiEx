@@ -121,7 +121,7 @@ Otherwise, the `.summary` file contains credible set level information, which ha
 - MAX_PIP: Maximum posterior inclusion probability (PIP) in the credible set.
 
 
-The `.cs` file contains information for all the SNPs included in each credible set and has the following columns:
+The `.cs` file contains information for all the SNPs included in credible sets and has the following columns:
 
 - CS_ID: ID of the credible set.
 
