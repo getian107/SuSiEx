@@ -91,7 +91,8 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=
 
 A `.summary` file, a `.cs` file and a `.snp` file will be written to the specified output directory.
 The `.snp` file contains a list of SNPs that are used in the fine-mapping algorithm.
-There are the SNPs that are located in the specified fine-mapping region, available in the GWAS summary statistics and the reference panel for at least one population, and survived the minor allele frequency filtering.
+These are the SNPs that are located in the specified fine-mapping region, available in the GWAS summary statistics and the reference panel for at least one population, and survived the minor allele frequency filtering.
+
 If the varitional algorithm did not converge, "FAIL" will be written to both the `.summary` file and the `.cs` file.
 If no credible set was identified at the specified coverage level, "NULL" will be written to both the `.summary` file and the `.cs` file.
 Otherwise, the `.summary` file contains a header line of the fine-mapping region and the following columns:
@@ -110,9 +111,9 @@ Otherwise, the `.summary` file contains a header line of the fine-mapping region
 
 - ALT_ALLELE: The alternative allele of the MAX_PIP_SNP in each population, separated by comma.
 
-- REF_FRQ: The frequency of the reference allele in each reference panel, separated by comma.
+- REF_FRQ: Frequency of the reference allele in each reference panel, separated by comma.
 
-- BETA: The marginal per-allele effect size of the MAX_PIP_SNP with respect to the reference allele in each population, separated by comma.
+- BETA: Marginal per-allele effect size of the MAX_PIP_SNP with respect to the reference allele in each population, separated by comma.
 
 - SE: The standard error of the marginal per-allele effect size of the MAX_PIP_SNP in each population, separated by comma.
 
@@ -124,6 +125,18 @@ The `.cs` file contains the following columns:
 - CS_ID: ID of the credible set.
 
 - SNP: SNP identifier.
+
+- BP: The base pair coordinate of the SNP.
+
+- REF_ALLELE: The reference allele of the SNP in each population, separated by comma.
+
+- ALT_ALLELE: The alternative allele of the SNP in each population, separated by comma.
+
+- REF_FRQ: Frequency of the reference allele in each reference panel, separated by comma.
+
+- BETA: Marginal per-allele effect size of the SNP with respect to the reference allele in each population, separated by comma.
+
+- SE: The standard error of the marginal per-allele effect size of the SNP in each population, separated by comma.
 
 - CS_PIP: Posterior inclusion probability (PIP) of the SNP.
 
