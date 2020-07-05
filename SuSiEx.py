@@ -115,7 +115,7 @@ def parse_param():
             print('* Please provide a reference panel for each GWAS using --ref-file\n')
             sys.exit(2)
         elif param_dict['chr'] == None:
-            print('* Please provide the chromosome of the fine-mapping region using --chr\n')
+            print('* Please provide the chromosome code of the fine-mapping region using --chr\n')
             sys.exit(2)
         elif param_dict['bp'] == None or len(param_dict['bp']) != 2:
             print('* Please provide the start and end base pair coordinate of the fine-mapping region using --bp\n')
@@ -206,7 +206,8 @@ def main():
     n_cs, alpha, cs_bin, cs_purity, pip = \
 	parse_pip.pip(flag, alpha, ld, pval_min, param_dict['level'], param_dict['min_purity'], param_dict['pval_thresh'])
 
-    write_cs.write_cs(n_cs, snp_dict, alpha, cs_bin, cs_purity, pip, param_dict['out_dir'], param_dict['out_name'])
+    write_cs.write_cs(param_dict['chr'], param_dict['bp'], n_pop, n_cs, snp_dict, beta, ind, param_dict['n_gwas'], 
+        alpha, cs_bin, cs_purity, pip, param_dict['out_dir'], param_dict['out_name'])
 
     print('... Done ...\n')
 

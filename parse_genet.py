@@ -22,8 +22,8 @@ def calc_ld(ref_file, ld_file, plink, chrom, bp, maf):
                 SNP.append(ll[1])
 
     with open(ld_file+'.snp', 'w') as ff:
-        for ll in range(len(SNP)):
-            ff.write('%s\n' % SNP[ll])
+        for snp in SNP:
+            ff.write('%s\n' % snp)
 
 
     cmd = '%s --bfile %s --keep-allele-order --chr %d --extract %s --maf %f --make-bed --out %s' \
@@ -155,7 +155,7 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
                     sst_miss.update({snp: False})
 
 
-    sst_dict = {'CHR':[], 'SNP':[], 'BP':[], 'A1':[], 'A2':[], 'BETA':[], 'P':[], 'MISS':[]}
+    sst_dict = {'CHR':[], 'SNP':[], 'BP':[], 'A1':[], 'A2':[], 'FRQ':[], 'BETA':[], 'P':[], 'MISS':[]}
     for (ii, snp) in enumerate(ref_dict['SNP']):
         if snp in sst_eff:
             sst_dict['CHR'].append(ref_dict['CHR'][ii])
@@ -163,10 +163,12 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
             sst_dict['BP'].append(ref_dict['BP'][ii])
             sst_dict['A1'].append(ref_dict['A1'][ii])
             sst_dict['A2'].append(ref_dict['A2'][ii])
+            sst_dict['FRQ'].append(ref_dict['FRQ'][ii])
             sst_dict['BETA'].append(sst_eff[snp])
             sst_dict['P'].append(sst_pval[snp])
             sst_dict['MISS'].append(sst_miss[snp])
 
+    sst_dict['FRQ'] = sp.array(sst_dict['FRQ'], ndmin=2).T
     sst_dict['BETA'] = sp.array(sst_dict['BETA'], ndmin=2).T
     sst_dict['P'] = sp.array(sst_dict['P'], ndmin=2).T
     sst_dict['MISS'] = sp.array(sst_dict['MISS'], ndmin=2).T
@@ -218,10 +220,14 @@ def align_sumstats(sst_dict, ld_dict, n_pop):
     idx = sp.argsort(bp)
     snp_dict = {}
     snp_dict['SNP'] = [snp[jj] for jj in idx]
+    snp_dict['BP'] = [bp[jj] for jj in idx]
 
     print('... a total of %d SNPs across populations ...' % len(snp_dict['SNP']))
 
 
+    snp_dict['A1'] = sp.array([['NA']*n_pop]*n_snp)
+    snp_dict['A2'] = sp.array([['NA']*n_pop]*n_snp)
+    snp_dict['FRQ'] = sp.zeros((n_snp,n_pop))
     beta = sp.zeros((n_snp,n_pop))
     pval = sp.ones((n_snp,n_pop))
     ind = sp.ones((n_snp,n_pop), dtype=bool)
@@ -234,6 +240,9 @@ def align_sumstats(sst_dict, ld_dict, n_pop):
         idx = [jj for jj in range(n_snp) if snp_dict['SNP'][jj] in sst_dict[pp]['SNP']]
         idx_pp = [sst_dict[pp]['SNP'].index(snp_dict['SNP'][jj]) for jj in idx] 
 
+        snp_dict['A1'][idx,pp] = [sst_dict[pp]['A1'][jj] for jj in idx_pp]
+        snp_dict['A2'][idx,pp] = [sst_dict[pp]['A2'][jj] for jj in idx_pp]
+        snp_dict['FRQ'][idx,pp,None] = sst_dict[pp]['FRQ'][idx_pp]
         beta[idx,pp,None] = sst_dict[pp]['BETA'][idx_pp]
         pval[idx,pp,None] = sst_dict[pp]['P'][idx_pp]
         ind[idx,pp,None] = sst_dict[pp]['MISS'][idx_pp]
