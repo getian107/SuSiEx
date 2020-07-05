@@ -95,7 +95,8 @@ These are the SNPs that are located in the specified fine-mapping region, availa
 
 If the varitional algorithm did not converge, "FAIL" will be written to both the `.summary` file and the `.cs` file.
 If no credible set was identified at the specified coverage level after purity and marginal p-value filtering, "NULL" will be written to both the `.summary` file and the `.cs` file.
-Otherwise, the `.summary` file contains a header line of the fine-mapping region and the following columns:
+
+Otherwise, the `.summary` file contains credible set level information, which has a header line of the fine-mapping region and the following columns:
 
 - CS_ID: ID of the credible set.
 
@@ -120,7 +121,7 @@ Otherwise, the `.summary` file contains a header line of the fine-mapping region
 - MAX_PIP: Maximum posterior inclusion probability (PIP) in the credible set.
 
 
-The `.cs` file contains the following columns:
+The `.cs` file contains information for all the SNPs included in each credible set and has the following columns:
 
 - CS_ID: ID of the credible set.
 
