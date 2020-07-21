@@ -118,6 +118,8 @@ Otherwise, the `.summary` file contains credible set level information, which ha
 
 - SE: The standard error of the marginal per-allele effect size of the MAX_PIP_SNP in each population, separated by comma.
 
+- PVAL: Marginal p-value of the MAX_PIP_SNP in each population, separated by comma.
+
 - MAX_PIP: Maximum posterior inclusion probability (PIP) in the credible set.
 
 
@@ -138,6 +140,8 @@ The `.cs` file contains information for all the SNPs included in credible sets a
 - BETA: Marginal per-allele effect size of the SNP with respect to the reference allele in each population, separated by comma.
 
 - SE: The standard error of the marginal per-allele effect size of the SNP in each population, separated by comma.
+
+- PVAL: Marginal p-value of the SNP in each population, separated by comma.
 
 - CS_PIP: Posterior inclusion probability (PIP) of the SNP.
 
