@@ -251,7 +251,7 @@ def align_sumstats(sst_dict, ld_dict, n_pop):
     tau_sq = sp.amax(beta**2,axis=0)
     pval_min = sp.amin(pval,axis=1).reshape(len(pval),1)
 
-    return snp_dict, beta, tau_sq, pval_min, ind, ld
+    return snp_dict, beta, tau_sq, pval, pval_min, ind, ld
 
 
 def clean_files(ld_file):

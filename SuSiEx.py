@@ -180,7 +180,7 @@ def main():
         for pp in range(n_pop):
             ld_dict[pp] = parse_genet.parse_ld(param_dict['ld_file'][pp]+'.ld', ref_dict[pp], sst_dict[pp])
 
-        snp_dict, beta, tau_sq, pval_min, ind, ld = parse_genet.align_sumstats(sst_dict, ld_dict, n_pop)
+        snp_dict, beta, tau_sq, pval, pval_min, ind, ld = parse_genet.align_sumstats(sst_dict, ld_dict, n_pop)
 
         for pp in range(n_pop):
             parse_genet.clean_files(param_dict['ld_file'][pp])
@@ -206,7 +206,7 @@ def main():
     n_cs, alpha, cs_bin, cs_purity, pip = \
 	parse_pip.pip(flag, alpha, ld, pval_min, param_dict['level'], param_dict['min_purity'], param_dict['pval_thresh'])
 
-    write_cs.write_cs(param_dict['chr'], param_dict['bp'], n_pop, n_cs, snp_dict, beta, ind, param_dict['n_gwas'], 
+    write_cs.write_cs(param_dict['chr'], param_dict['bp'], n_pop, n_cs, snp_dict, beta, ind, pval, param_dict['n_gwas'], 
         alpha, cs_bin, cs_purity, pip, param_dict['out_dir'], param_dict['out_name'])
 
     print('... Done ...\n')
