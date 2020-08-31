@@ -219,7 +219,6 @@ def main():
 	alpha, cs_bin, cs_purity, pip, param_dict['out_dir'], param_dict['out_name'])
 
 
-
     print('... Done ...\n')
 
 
