@@ -17,7 +17,7 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=
                  --chr=CHR --bp=BP --chr_col=CHR_COL --snp_col=SNP_COL --bp_col=BP_COL --a1_col=A1_COL --a2_col=A2_COL
                  --eff_col=EFF_COL --pval_col=PVAL_COL --plink=PLINK
 		 [--keep-ambig=KEEP_AMBIGUOUS_SNPS --maf=MAF_THRESHOLD --n_sig=NUMBER_OF_SIGNALS --level=LEVEL --min_purity=MINIMUM_PURITY
-		  --two_step=TWO_STEP_FITTING --pval_thresh=MARGINAL_PVAL_THRESHOLD --max_iter=MAXIMUM_ITERATIONS --tol=TOLERANCE]
+		  --two-step=TWO_STEP_FITTING --pval_thresh=MARGINAL_PVAL_THRESHOLD --max_iter=MAXIMUM_ITERATIONS --tol=TOLERANCE]
 
 """
 
@@ -80,7 +80,7 @@ def parse_param():
             elif opt == "--n_sig": param_dict['n_sig'] = int(arg)
             elif opt == "--level": param_dict['level'] = float(arg)
             elif opt == "--min_purity": param_dict['min_purity'] = float(arg)
-            elif opt == "--two-step": param_dict['two_step'] = arg.upper()
+            elif opt == "--two-step": param_dict['two-step'] = arg.upper()
             elif opt == "--pval_thresh": param_dict['pval_thresh'] = float(arg)
             elif opt == "--max_iter": param_dict['max_iter'] = int(arg)
             elif opt == "--tol": param_dict['tol'] = float(arg)
@@ -206,7 +206,7 @@ def main():
     n_cs, alpha, cs_bin, cs_purity, pip = \
 	parse_pip.pip(flag, alpha, ld, pval_min, param_dict['level'], param_dict['min_purity'], param_dict['pval_thresh'])
 
-    if param_dict['two_step'] == 'TRUE':
+    if param_dict['two-step'] == 'TRUE':
 	print('* Two-step model fitting')
 	alpha, b, b_sq, sigma_sq, elbo_new, n_iter, flag = \
 		SuSiE.SUSIE_sst_xethn(beta, ind, param_dict['n_gwas'], ld, tau_sq, n_cs, param_dict['max_iter'], param_dict['tol'])
