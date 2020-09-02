@@ -44,7 +44,7 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=
 
 - LD_MATRIX_FILE (required): Full path and filename prefix of the LD matrix to be computed from the reference panels for each population, in the order corresponding to the GWAS summary statistics files, separated by comma.
 
-- OUTPUT_DIR (required): Full path of the utput directory.
+- OUTPUT_DIR (required): Full path of the output directory.
 
 - OUTPUT_FILENAME (required): Prefix of the output files.
 
