@@ -64,12 +64,14 @@ def parse_ref(ref_file, ld_file_ref, ld_file_frq):
 def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_col, a2_col, eff_col, pval_col, n_subj, ambig):
     print('... parse sumstats file: %s ...' % sst_file)
 
+    ATGC = ['A', 'T', 'G', 'C']
     sst_dict = {'SNP':[], 'A1':[], 'A2':[]}
     with open(sst_file) as ff:
         header = next(ff)
         for line in ff:
             ll = (line.strip()).split()
-            if int(ll[chr_col-1]) == chrom and int(ll[bp_col-1]) >= bp[0] and int(ll[bp_col-1]) <= bp[1]:
+            if int(ll[chr_col-1]) == chrom and int(ll[bp_col-1]) >= bp[0] and int(ll[bp_col-1]) <= bp[1] and \
+                ll[a1_col-1] in ATGC and ll[a2_col-1] in ATGC:
                 sst_dict['SNP'].append(ll[snp_col-1])
                 sst_dict['A1'].append(ll[a1_col-1])
                 sst_dict['A2'].append(ll[a2_col-1])
@@ -78,13 +80,12 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
 
 
     mapping = {'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G'}
-    ATGC = ['A', 'T', 'G', 'C']
 
     ref_snp = set(zip(ref_dict['SNP'], ref_dict['A1'], ref_dict['A2']))
 
     sst_snp = set(zip(sst_dict['SNP'], sst_dict['A1'], sst_dict['A2'])) | set(zip(sst_dict['SNP'], sst_dict['A2'], sst_dict['A1'])) | \
-              set(zip(sst_dict['SNP'], [mapping[aa] for aa in sst_dict['A1'] if aa in ATGC], [mapping[aa] for aa in sst_dict['A2'] if aa in ATGC])) | \
-              set(zip(sst_dict['SNP'], [mapping[aa] for aa in sst_dict['A2'] if aa in ATGC], [mapping[aa] for aa in sst_dict['A1'] if aa in ATGC]))
+              set(zip(sst_dict['SNP'], [mapping[aa] for aa in sst_dict['A1']], [mapping[aa] for aa in sst_dict['A2']])) | \
+              set(zip(sst_dict['SNP'], [mapping[aa] for aa in sst_dict['A2']], [mapping[aa] for aa in sst_dict['A1']]))
 
     comm_snp = ref_snp & sst_snp
 
