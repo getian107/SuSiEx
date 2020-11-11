@@ -37,8 +37,8 @@ def calc_ld(ref_file, ld_file, plink, chrom, bp, maf):
     subprocess.check_output(cmd, shell=True)
 
 
-def parse_ref(ref_file, ld_file_ref, ld_file_frq):
-    print('... parse reference file: %s ...' % (ref_file+'.bim'))
+def parse_ref(ld_file_ref, ld_file_frq):
+    print('... parse reference file: %s ...' % (ld_file_ref+'.bim'))
 
     ref_dict = {'CHR':[], 'SNP':[], 'BP':[], 'A1':[], 'A2':[], 'FRQ':[]}
     with open(ld_file_ref+'.bim') as ff:
@@ -56,7 +56,7 @@ def parse_ref(ref_file, ld_file_ref, ld_file_frq):
             ll = (line.strip()).split()
             ref_dict['FRQ'].append(ll[4])
 
-    print('... %d SNPs in the fine-mapping region read from %s ...' % (len(ref_dict['SNP']), ref_file+'.bim'))
+    print('... %d SNPs in the fine-mapping region read from %s ...' % (len(ref_dict['SNP']), ld_file_ref+'.bim'))
 
     return ref_dict
 
@@ -255,15 +255,16 @@ def align_sumstats(sst_dict, ld_dict, n_pop):
     return snp_dict, beta, tau_sq, pval, pval_min, ind, ld
 
 
-def clean_files(ld_file):
-    subprocess.check_output('rm '+ld_file+'.snp', shell=True)
-    subprocess.check_output('rm '+ld_file+'_ref.bed', shell=True)
-    subprocess.check_output('rm '+ld_file+'_ref.bim', shell=True)
-    subprocess.check_output('rm '+ld_file+'_ref.fam', shell=True)
-    subprocess.check_output('rm '+ld_file+'_ref.log', shell=True)
-    subprocess.check_output('rm '+ld_file+'_frq.frq', shell=True)
-    subprocess.check_output('rm '+ld_file+'_frq.log', shell=True)
-    subprocess.check_output('rm '+ld_file+'.ld', shell=True)
-    subprocess.check_output('rm '+ld_file+'.log', shell=True)
+def clean_files(ld_file, precmp):
+    if precmp == False:
+        subprocess.check_output('rm '+ld_file+'.snp', shell=True)
+        subprocess.check_output('rm '+ld_file+'_ref.bed', shell=True)
+        subprocess.check_output('rm '+ld_file+'_ref.bim', shell=True)
+        subprocess.check_output('rm '+ld_file+'_ref.fam', shell=True)
+        subprocess.check_output('rm '+ld_file+'_ref.log', shell=True)
+        subprocess.check_output('rm '+ld_file+'_frq.frq', shell=True)
+        subprocess.check_output('rm '+ld_file+'_frq.log', shell=True)
+        subprocess.check_output('rm '+ld_file+'.ld', shell=True)
+        subprocess.check_output('rm '+ld_file+'.log', shell=True)
 
 

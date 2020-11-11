@@ -24,6 +24,7 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=
 
 import sys
 import getopt
+import os.path
 
 import parse_genet
 import parse_genet_sim
@@ -110,10 +111,16 @@ def parse_param():
         sys.exit(2)
 
     n_pop = len(param_dict['sst_file'])
+    param_dict['precmp'] = True
+    for pp in range(n_pop):
+        if (os.path.isfile(param_dict['ld_file'][pp]+'.ld') == False or 
+            os.path.isfile(param_dict['ld_file'][pp]+'_frq.frq') == False or 
+            os.path.isfile(param_dict['ld_file'][pp]+'_ref.bim') == False):
+            param_dict['precmp'] = False
 
     if param_dict['sim'] == 'FALSE':
-        if param_dict['ref_file'] == None or len(param_dict['ref_file']) != n_pop:
-            print('* Please provide a reference panel for each GWAS using --ref-file\n')
+        if param_dict['precmp'] == False and param_dict['ref_file'] == None or len(param_dict['ref_file']) != n_pop:
+            print('* Please provide precomputed LD and frequency files or a reference panel for each GWAS using --ref-file\n')
             sys.exit(2)
         elif param_dict['chr'] == None:
             print('* Please provide the chromosome code of the fine-mapping region using --chr\n')
@@ -164,12 +171,13 @@ def main():
     n_pop = len(param_dict['sst_file'])
 
     if param_dict['sim'] == 'FALSE':
-        for pp in range(n_pop):
-            parse_genet.calc_ld(param_dict['ref_file'][pp], param_dict['ld_file'][pp], param_dict['plink'], param_dict['chr'], param_dict['bp'], param_dict['maf'])
+        if param_dict['precmp'] == False:
+            for pp in range(n_pop):
+                parse_genet.calc_ld(param_dict['ref_file'][pp], param_dict['ld_file'][pp], param_dict['plink'], param_dict['chr'], param_dict['bp'], param_dict['maf'])
 
         ref_dict = {}
         for pp in range(n_pop):
-            ref_dict[pp] = parse_genet.parse_ref(param_dict['ref_file'][pp], param_dict['ld_file'][pp]+'_ref', param_dict['ld_file'][pp]+'_frq')
+            ref_dict[pp] = parse_genet.parse_ref(param_dict['ld_file'][pp]+'_ref', param_dict['ld_file'][pp]+'_frq')
 
         sst_dict = {}
         for pp in range(n_pop):
@@ -184,7 +192,7 @@ def main():
         snp_dict, beta, tau_sq, pval, pval_min, ind, ld = parse_genet.align_sumstats(sst_dict, ld_dict, n_pop)
 
         for pp in range(n_pop):
-            parse_genet.clean_files(param_dict['ld_file'][pp])
+            parse_genet.clean_files(param_dict['ld_file'][pp], param_dict['precmp'])
 
     else:
         print('### Simulation Mode ###')
