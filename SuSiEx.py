@@ -60,21 +60,21 @@ def parse_param():
                 print(__doc__)
                 sys.exit(0)
             elif opt == "--sst_file": param_dict['sst_file'] = arg.split(',')
-            elif opt == "--n_gwas": param_dict['n_gwas'] = map(int, arg.split(','))
+            elif opt == "--n_gwas": param_dict['n_gwas'] = list(map(int,arg.split(',')))
             elif opt == "--ref_file": param_dict['ref_file'] = arg.split(',')
             elif opt == "--ld_file": param_dict['ld_file'] = arg.split(',')
             elif opt == "--out_dir": param_dict['out_dir'] = arg
             elif opt == "--out_name": param_dict['out_name'] = arg
             elif opt == "--sim": param_dict['sim'] = arg.upper()
             elif opt == "--chr": param_dict['chr'] = int(arg)
-            elif opt == "--bp": param_dict['bp'] = map(int, arg.split(','))
-            elif opt == "--chr_col": param_dict['chr_col'] = map(int, arg.split(','))
-            elif opt == "--snp_col": param_dict['snp_col'] = map(int, arg.split(','))
-            elif opt == "--bp_col": param_dict['bp_col'] = map(int, arg.split(','))
-            elif opt == "--a1_col": param_dict['a1_col'] = map(int, arg.split(','))
-            elif opt == "--a2_col": param_dict['a2_col'] = map(int, arg.split(','))
-            elif opt == "--eff_col": param_dict['eff_col'] = map(int, arg.split(','))
-            elif opt == "--pval_col": param_dict['pval_col'] = map(int, arg.split(','))
+            elif opt == "--bp": param_dict['bp'] = list(map(int,arg.split(',')))
+            elif opt == "--chr_col": param_dict['chr_col'] = list(map(int, arg.split(',')))
+            elif opt == "--snp_col": param_dict['snp_col'] = list(map(int, arg.split(',')))
+            elif opt == "--bp_col": param_dict['bp_col'] = list(map(int, arg.split(',')))
+            elif opt == "--a1_col": param_dict['a1_col'] = list(map(int, arg.split(',')))
+            elif opt == "--a2_col": param_dict['a2_col'] = list(map(int, arg.split(',')))
+            elif opt == "--eff_col": param_dict['eff_col'] = list(map(int, arg.split(',')))
+            elif opt == "--pval_col": param_dict['pval_col'] = list(map(int, arg.split(',')))
             elif opt == "--plink": param_dict['plink'] = arg
             elif opt == "--keep-ambig": param_dict['keep-ambig'] = arg.upper()
             elif opt == "--maf": param_dict['maf'] = float(arg)
@@ -119,7 +119,7 @@ def parse_param():
             param_dict['precmp'] = False
 
     if param_dict['sim'] == 'FALSE':
-        if param_dict['precmp'] == False and param_dict['ref_file'] == None or len(param_dict['ref_file']) != n_pop:
+        if param_dict['precmp'] == False and (param_dict['ref_file'] == None or len(param_dict['ref_file']) != n_pop):
             print('* Please provide precomputed LD and frequency files or a reference panel for each GWAS using --ref-file\n')
             sys.exit(2)
         elif param_dict['chr'] == None:
@@ -191,8 +191,9 @@ def main():
 
         snp_dict, beta, tau_sq, pval, pval_min, ind, ld = parse_genet.align_sumstats(sst_dict, ld_dict, n_pop)
 
-        for pp in range(n_pop):
-            parse_genet.clean_files(param_dict['ld_file'][pp], param_dict['precmp'])
+        if param_dict['precmp'] == False:
+            for pp in range(n_pop):
+                parse_genet.clean_files(param_dict['ld_file'][pp])
 
     else:
         print('### Simulation Mode ###')
@@ -215,16 +216,16 @@ def main():
 	parse_pip.pip(flag, alpha, ld, pval_min, param_dict['level'], param_dict['min_purity'], param_dict['pval_thresh'])
 
     if param_dict['two-step'] == 'TRUE':
-	print('* Two-step model fitting')
-	alpha, b, b_sq, sigma_sq, elbo_new, n_iter, flag = \
-		SuSiE.SUSIE_sst_xethn(beta, ind, param_dict['n_gwas'], ld, tau_sq, n_cs, param_dict['max_iter'], param_dict['tol'])
+        print('* Two-step model fitting')
+        alpha, b, b_sq, sigma_sq, elbo_new, n_iter, flag = \
+            SuSiE.SUSIE_sst_xethn(beta, ind, param_dict['n_gwas'], ld, tau_sq, n_cs, param_dict['max_iter'], param_dict['tol'])
 
-	n_cs, alpha, cs_bin, cs_purity, pip = \
-		parse_pip.pip(flag, alpha, ld, pval_min, param_dict['level'], 0.0, param_dict['pval_thresh'])
+        n_cs, alpha, cs_bin, cs_purity, pip = \
+            parse_pip.pip(flag, alpha, ld, pval_min, param_dict['level'], 0.0, param_dict['pval_thresh'])
 
 
     write_cs.write_cs(param_dict['chr'], param_dict['bp'], n_pop, n_cs, snp_dict, beta, ind, pval, param_dict['n_gwas'], 
-	alpha, cs_bin, cs_purity, pip, param_dict['out_dir'], param_dict['out_name'])
+        alpha, cs_bin, cs_purity, pip, param_dict['out_dir'], param_dict['out_name'])
 
 
     print('... Done ...\n')

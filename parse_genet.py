@@ -255,16 +255,15 @@ def align_sumstats(sst_dict, ld_dict, n_pop):
     return snp_dict, beta, tau_sq, pval, pval_min, ind, ld
 
 
-def clean_files(ld_file, precmp):
-    if precmp == False:
-        subprocess.check_output('rm '+ld_file+'.snp', shell=True)
-        subprocess.check_output('rm '+ld_file+'_ref.bed', shell=True)
-        subprocess.check_output('rm '+ld_file+'_ref.bim', shell=True)
-        subprocess.check_output('rm '+ld_file+'_ref.fam', shell=True)
-        subprocess.check_output('rm '+ld_file+'_ref.log', shell=True)
-        subprocess.check_output('rm '+ld_file+'_frq.frq', shell=True)
-        subprocess.check_output('rm '+ld_file+'_frq.log', shell=True)
-        subprocess.check_output('rm '+ld_file+'.ld', shell=True)
-        subprocess.check_output('rm '+ld_file+'.log', shell=True)
+def clean_files(ld_file):
+    subprocess.check_output('rm '+ld_file+'.snp', shell=True)
+    subprocess.check_output('rm '+ld_file+'_ref.bed', shell=True)
+    subprocess.check_output('rm '+ld_file+'_ref.bim', shell=True)
+    subprocess.check_output('rm '+ld_file+'_ref.fam', shell=True)
+    subprocess.check_output('rm '+ld_file+'_ref.log', shell=True)
+    subprocess.check_output('rm '+ld_file+'_frq.frq', shell=True)
+    subprocess.check_output('rm '+ld_file+'_frq.log', shell=True)
+    subprocess.check_output('rm '+ld_file+'.ld', shell=True)
+    subprocess.check_output('rm '+ld_file+'.log', shell=True)
 
 
