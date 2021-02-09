@@ -104,7 +104,7 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
                 continue
 
             if (a1=='A' and a2=='T') or (a1=='T' and a2=='A') or (a1=='G' and a2=='C') or (a1=='C' and a2=='G'):
-                if ambig == 'True' and (snp, a1, a2) in comm_snp:
+                if ambig == 'TRUE' and (snp, a1, a2) in comm_snp:
                     if ll[eff_col-1] == 'NA' or ll[pval_col-1] == 'NA':
                         sst_eff.update({snp: 0.0})
                         sst_pval.update({snp: 1.0})
