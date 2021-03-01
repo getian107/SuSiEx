@@ -61,7 +61,7 @@ def parse_ref(ld_file_ref, ld_file_frq):
     return ref_dict
 
 
-def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_col, a2_col, eff_col, pval_col, n_subj, ambig):
+def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_col, a2_col, eff_col, se_col, pval_col, n_subj, ambig):
     print('... parse sumstats file: %s ...' % sst_file)
 
     ATGC = ['A', 'T', 'G', 'C']
@@ -115,9 +115,11 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
                         elif header[eff_col-1] == 'OR':
                             beta = sp.log(float(ll[eff_col-1]))
 
+                        se = float(ll[se_col-1])
                         pval = max(float(ll[pval_col-1]), 1e-323)
 
-                        sst_eff.update({snp: sp.sign(beta)*abs(norm.ppf(pval/2.0))/n_sqrt})
+                        # sst_eff.update({snp: sp.sign(beta)*abs(norm.ppf(pval/2.0))/n_sqrt})
+                        sst_eff.update({snp: beta/se/n_sqrt})
                         sst_pval.update({snp: pval})
                         sst_miss.update({snp: False})
 
@@ -132,9 +134,11 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
                         elif header[eff_col-1] == 'OR':
                             beta = sp.log(float(ll[eff_col-1]))
 
+                        se = float(ll[se_col-1])
                         pval = max(float(ll[pval_col-1]), 1e-323)
 
-                        sst_eff.update({snp: -1*sp.sign(beta)*abs(norm.ppf(pval/2.0))/n_sqrt})
+                        # sst_eff.update({snp: -1*sp.sign(beta)*abs(norm.ppf(pval/2.0))/n_sqrt})
+                        sst_eff.update({snp: -1*beta/se/n_sqrt})
                         sst_pval.update({snp: pval})
                         sst_miss.update({snp: False})
 
@@ -149,9 +153,11 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
                     elif header[eff_col-1] == 'OR':
                         beta = sp.log(float(ll[eff_col-1]))
 
+                    se = float(ll[se_col-1])
                     pval = max(float(ll[pval_col-1]), 1e-323)
 
-                    sst_eff.update({snp: sp.sign(beta)*abs(norm.ppf(pval/2.0))/n_sqrt})
+                    # sst_eff.update({snp: sp.sign(beta)*abs(norm.ppf(pval/2.0))/n_sqrt})
+                    sst_eff.update({snp: beta/se/n_sqrt})
                     sst_pval.update({snp: pval})
                     sst_miss.update({snp: False})
 
@@ -166,9 +172,11 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
                     elif header[eff_col-1] == 'OR':
                         beta = sp.log(float(ll[eff_col-1]))
 
+                    se = float(ll[se_col-1])
                     pval = max(float(ll[pval_col-1]), 1e-323)
 
-                    sst_eff.update({snp: -1*sp.sign(beta)*abs(norm.ppf(pval/2.0))/n_sqrt})
+                    # sst_eff.update({snp: -1*sp.sign(beta)*abs(norm.ppf(pval/2.0))/n_sqrt})
+                    sst_eff.update({snp: -1*beta/se/n_sqrt})
                     sst_pval.update({snp: pval})
                     sst_miss.update({snp: False})
 
