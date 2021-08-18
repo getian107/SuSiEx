@@ -93,6 +93,7 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
     n_sqrt = sp.sqrt(n_subj)
     sst_eff = {}
     sst_pval = {}
+    sst_logp = {}
     sst_miss = {}
     with open(sst_file) as ff:
         header = (next(ff).strip()).split()
@@ -108,6 +109,7 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
                     if ll[eff_col-1] == 'NA' or ll[pval_col-1] == 'NA':
                         sst_eff.update({snp: 0.0})
                         sst_pval.update({snp: 1.0})
+                        sst_logp.update({snp: 0.0})
                         sst_miss.update({snp: True})
                     else:
                         if header[eff_col-1] == 'BETA':
@@ -121,12 +123,14 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
                         # sst_eff.update({snp: sp.sign(beta)*abs(norm.ppf(pval/2.0))/n_sqrt})
                         sst_eff.update({snp: beta/se/n_sqrt})
                         sst_pval.update({snp: pval})
+                        sst_logp.update({snp: -1*sp.log10(2)-norm.logcdf(-1*abs(beta/se))/sp.log(10)})
                         sst_miss.update({snp: False})
 
                 elif ambig == 'TRUE' and (snp, a2, a1) in comm_snp:
                     if ll[eff_col-1] == 'NA' or ll[pval_col-1] == 'NA':
                         sst_eff.update({snp: 0.0})
                         sst_pval.update({snp: 1.0})
+                        sst_logp.update({snp: 0.0})
                         sst_miss.update({snp: True})
                     else:
                         if header[eff_col-1] == 'BETA':
@@ -140,12 +144,14 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
                         # sst_eff.update({snp: -1*sp.sign(beta)*abs(norm.ppf(pval/2.0))/n_sqrt})
                         sst_eff.update({snp: -1*beta/se/n_sqrt})
                         sst_pval.update({snp: pval})
+                        sst_logp.update({snp: -1*sp.log10(2)-norm.logcdf(-1*abs(beta/se))/sp.log(10)})
                         sst_miss.update({snp: False})
 
             elif (snp, a1, a2) in comm_snp or (snp, mapping[a1], mapping[a2]) in comm_snp:
                 if ll[eff_col-1] == 'NA' or ll[pval_col-1] == 'NA':
                     sst_eff.update({snp: 0.0})
                     sst_pval.update({snp: 1.0})
+                    sst_logp.update({snp: 0.0})
                     sst_miss.update({snp: True})
                 else:
                     if header[eff_col-1] == 'BETA':
@@ -159,12 +165,14 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
                     # sst_eff.update({snp: sp.sign(beta)*abs(norm.ppf(pval/2.0))/n_sqrt})
                     sst_eff.update({snp: beta/se/n_sqrt})
                     sst_pval.update({snp: pval})
+                    sst_logp.update({snp: -1*sp.log10(2)-norm.logcdf(-1*abs(beta/se))/sp.log(10)})
                     sst_miss.update({snp: False})
 
             elif (snp, a2, a1) in comm_snp or (snp, mapping[a2], mapping[a1]) in comm_snp:
                 if ll[eff_col-1] == 'NA' or ll[pval_col-1] == 'NA':
                     sst_eff.update({snp: 0.0})
                     sst_pval.update({snp: 1.0})
+                    sst_logp.update({snp: 0.0})
                     sst_miss.update({snp: True})
                 else:
                     if header[eff_col-1] == 'BETA':
@@ -178,10 +186,11 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
                     # sst_eff.update({snp: -1*sp.sign(beta)*abs(norm.ppf(pval/2.0))/n_sqrt})
                     sst_eff.update({snp: -1*beta/se/n_sqrt})
                     sst_pval.update({snp: pval})
+                    sst_logp.update({snp: -1*sp.log10(2)-norm.logcdf(-1*abs(beta/se))/sp.log(10)})
                     sst_miss.update({snp: False})
 
 
-    sst_dict = {'CHR':[], 'SNP':[], 'BP':[], 'A1':[], 'A2':[], 'FRQ':[], 'BETA':[], 'P':[], 'MISS':[]}
+    sst_dict = {'CHR':[], 'SNP':[], 'BP':[], 'A1':[], 'A2':[], 'FRQ':[], 'BETA':[], 'P':[], 'LOGP':[], 'MISS':[]}
     for (ii, snp) in enumerate(ref_dict['SNP']):
         if snp in sst_eff:
             sst_dict['CHR'].append(ref_dict['CHR'][ii])
@@ -192,11 +201,13 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
             sst_dict['FRQ'].append(ref_dict['FRQ'][ii])
             sst_dict['BETA'].append(sst_eff[snp])
             sst_dict['P'].append(sst_pval[snp])
+            sst_dict['LOGP'].append(sst_logp[snp])
             sst_dict['MISS'].append(sst_miss[snp])
 
     sst_dict['FRQ'] = sp.array(sst_dict['FRQ'], ndmin=2).T
     sst_dict['BETA'] = sp.array(sst_dict['BETA'], ndmin=2).T
     sst_dict['P'] = sp.array(sst_dict['P'], ndmin=2).T
+    sst_dict['LOGP'] = sp.array(sst_dict['LOGP'], ndmin=2).T
     sst_dict['MISS'] = sp.array(sst_dict['MISS'], ndmin=2).T
 
     print('... %d common SNPs in the reference and sumstats ...' % len(sst_dict['SNP']))
@@ -256,6 +267,7 @@ def align_sumstats(sst_dict, ld_dict, n_pop):
     snp_dict['FRQ'] = sp.zeros((n_snp,n_pop))
     beta = sp.zeros((n_snp,n_pop))
     pval = sp.ones((n_snp,n_pop))
+    logp = sp.zeros((n_snp,n_pop))
     ind = sp.ones((n_snp,n_pop), dtype=bool)
     ld = sp.zeros((n_snp,n_snp,n_pop))
     for pp in range(n_pop):
@@ -271,13 +283,14 @@ def align_sumstats(sst_dict, ld_dict, n_pop):
         snp_dict['FRQ'][idx,pp,None] = sst_dict[pp]['FRQ'][idx_pp]
         beta[idx,pp,None] = sst_dict[pp]['BETA'][idx_pp]
         pval[idx,pp,None] = sst_dict[pp]['P'][idx_pp]
+        logp[idx,pp,None] = sst_dict[pp]['LOGP'][idx_pp]
         ind[idx,pp,None] = sst_dict[pp]['MISS'][idx_pp]
         ld[sp.ix_(idx,idx,[pp])] = ld_dict[pp][sp.ix_(idx_pp,idx_pp)].reshape(len(idx),len(idx),1)
 
     tau_sq = sp.amax(beta**2,axis=0)
     pval_min = sp.amin(pval,axis=1).reshape(len(pval),1)
 
-    return snp_dict, beta, tau_sq, pval, pval_min, ind, ld
+    return snp_dict, beta, tau_sq, pval, logp, pval_min, ind, ld
 
 
 def clean_files(ld_file):
