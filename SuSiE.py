@@ -55,7 +55,9 @@ def SUSIE_sst_xethn(beta, ind, n, D, tau_sq, l, max_iter, tol):
         for ss in range(s):
             elbo_new = elbo_new-0.5*n[ss]*sp.log(2*sp.pi*sigma_sq[ss])-1.0/(2.0*sigma_sq[ss])*erss[ss]
 
-        if abs(elbo_new-elbo_old) < tol:
+        if sp.iscomplex(elbo_new):
+            break
+        elif abs(elbo_new-elbo_old) < tol:
             flag = True
             break
         else:

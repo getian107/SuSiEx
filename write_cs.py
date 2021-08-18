@@ -40,9 +40,9 @@ def write_cs(reg_chr, reg_bp, n_pop, n_cs, snp_dict, beta, ind, pval, logp, n, a
             cs_len = sp.sum(cs_bin,axis=0)
 
             ff.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' % \
-                ('CS_ID', 'SNP', 'BP', 'REF_ALLELE', 'ALT_ALLELE', 'REF_FRQ', 'BETA', 'SE', '-LOGP', 'CS_PIP', 'OVRL_PIP'))
+                ('CS_ID', 'SNP', 'BP', 'REF_ALLELE', 'ALT_ALLELE', 'REF_FRQ', 'BETA', 'SE', '-LOG10P', 'CS_PIP', 'OVRL_PIP'))
             ss.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' % \
-                ('CS_ID', 'CS_LENGTH', 'CS_PURITY', 'MAX_PIP_SNP', 'BP', 'REF_ALLELE', 'ALT_ALLELE', 'REF_FRQ', 'BETA', 'SE', '-LOGP', 'MAX_PIP'))
+                ('CS_ID', 'CS_LENGTH', 'CS_PURITY', 'MAX_PIP_SNP', 'BP', 'REF_ALLELE', 'ALT_ALLELE', 'REF_FRQ', 'BETA', 'SE', '-LOG10P', 'MAX_PIP'))
 
             for ll in range(n_cs):
                 idx = [jj for jj in range(len(pip)) if cs_bin[jj,ll]]

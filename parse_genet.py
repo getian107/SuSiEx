@@ -31,7 +31,7 @@ def calc_ld(ref_file, ld_file, plink, chrom, bp, maf):
         % (plink, ref_file, chrom, ld_file+'.snp', maf, ld_file+'_ref')
     subprocess.check_output(cmd, shell=True)
 
-    cmd = '%s --bfile %s --keep-allele-order --r square --out %s' %(plink, ld_file+'_ref', ld_file)
+    cmd = '%s --bfile %s --keep-allele-order --r square gz --out %s' %(plink, ld_file+'_ref', ld_file)
     subprocess.check_output(cmd, shell=True)
 
     cmd = '%s --bfile %s --keep-allele-order --freq --out %s' %(plink, ld_file+'_ref', ld_file+'_frq')
