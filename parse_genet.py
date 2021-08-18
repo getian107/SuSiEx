@@ -8,6 +8,7 @@ Parse GWAS summary statistics and LD matrices
 
 import scipy as sp
 from scipy.stats import norm
+import gzip
 import subprocess
 
 
@@ -218,7 +219,7 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
 def parse_ld(ld_file, ref_dict, sst_dict):
     print('... parse LD file: %s ...' % ld_file)
 
-    with open(ld_file) as ff:
+    with gzip.open(ld_file) as ff:
         ld = [[float(val) for val in (line.strip()).split()] for line in ff]
 
     ld = sp.array(ld)

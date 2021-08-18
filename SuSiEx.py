@@ -114,7 +114,7 @@ def parse_param():
     n_pop = len(param_dict['sst_file'])
     param_dict['precmp'] = True
     for pp in range(n_pop):
-        if (os.path.isfile(param_dict['ld_file'][pp]+'.ld') == False or 
+        if (os.path.isfile(param_dict['ld_file'][pp]+'.ld.gz') == False or 
             os.path.isfile(param_dict['ld_file'][pp]+'_frq.frq') == False or 
             os.path.isfile(param_dict['ld_file'][pp]+'_ref.bim') == False):
             param_dict['precmp'] = False
@@ -192,7 +192,7 @@ def main():
 
         ld_dict = {}
         for pp in range(n_pop):
-            ld_dict[pp] = parse_genet.parse_ld(param_dict['ld_file'][pp]+'.ld', ref_dict[pp], sst_dict[pp])
+            ld_dict[pp] = parse_genet.parse_ld(param_dict['ld_file'][pp]+'.ld.gz', ref_dict[pp], sst_dict[pp])
 
         snp_dict, beta, tau_sq, pval, logp, pval_min, ind, ld = parse_genet.align_sumstats(sst_dict, ld_dict, n_pop)
 
