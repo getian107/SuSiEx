@@ -1,6 +1,6 @@
 # SuSiEx
 
-**SuSiEx** is a Python based command line tool that performs cross-ethnic fine-mapping using GWAS summary statistics and external reference panels. The method is built on the Sum of Single Effects (SuSiE) model:
+**SuSiEx** is a Python based command line tool that performs cross-ethnic fine-mapping using GWAS summary statistics and LD reference panels. The method is built on the Sum of Single Effects (SuSiE) model:
 
 Gao Wang, Abhishek Sarkar, Peter Carbonetto, Matthew Stephens. A simple new approach to variable selection in regression, with application to genetic fine-mapping. *Journal of the Royal Statistical Society: Series B (Statistical Methodology)*, https://doi.org/10.1111/rssb.12388, 2020.
 
