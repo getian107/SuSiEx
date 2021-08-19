@@ -40,8 +40,6 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=
 
 - OUTPUT_FILENAME (required): Prefix of the output files.
 
-- SIMULATION_MODE (temporary): --sim=True indicates that input files are simulated data (i.e., \*assoc.linear and \*ld). Default is True.
-
 - CHR (required): Chromosome of the fine-mapping region.
 
 - BP (required): The start and end base pair coordinate of the fine-mapping region, separated by comma.
