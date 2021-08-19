@@ -50,9 +50,9 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=
 
 - BP_COL (required): The column number of the base pair coordinate in each GWAS summary statistics file, separated by comma.
 
-- A1_COL (required): The column number of the A1 allele in each GWAS summary statistics file, separated by comma.
+- A1_COL (required): The column number of the A1 allele (effective allele) in each GWAS summary statistics file, separated by comma.
 
-- A2_COL (required): The column number of the A2 allele in each GWAS summary statistics file, separated by comma.
+- A2_COL (required): The column number of the A2 allele (alternative allele) in each GWAS summary statistics file, separated by comma.
 
 - EFF_COL (required): The column number of the effect size estimate (beta or odds ratio) in each GWAS summary statistics file, separated by comma.
 
