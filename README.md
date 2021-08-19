@@ -24,16 +24,8 @@ Gao Wang, Abhishek Sarkar, Peter Carbonetto, Matthew Stephens. A simple new appr
 
 ## Using SuSiEx
 
-### Simulation mode (will be removed in formal release):
-
 `
-python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ld_file=LD_MATRIX_FILE --out_dir=OUTPUT_DIR --out_name=OUTPUT_FILENAME --sim=True [--n_sig=NUMBER_OF_SIGNALS --level=LEVEL --min_purity=MINIMUM_PURITY --pval_thresh=MARGINAL_PVAL_THRESHOLD --max_iter=MAXIMUM_ITERATIONS --tol=TOLERANCE]
-`
-
-### Non-simulation mode:
-
-`
-python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=REF_FILE --ld_file=LD_MATRIX_FILE --out_dir=OUTPUT_DIR --out_name=OUTPUT_FILENAME --sim=False --chr=CHR --bp=BP --chr_col=CHR_COL --snp_col=SNP_COL --bp_col=BP_COL --a1_col=A1_COL --a2_col=A2_COL --eff_col=EFF_COL --se_col=SE_COL --pval_col=PVAL_COL --plink=PLINK [--keep-ambig=KEEP_AMBIGUOUS_SNPS --maf=MAF_THRESHOLD --n_sig=NUMBER_OF_SIGNALS --level=LEVEL --min_purity=MINIMUM_PURITY --two-step=TWO_STEP_FITTING --pval_thresh=MARGINAL_PVAL_THRESHOLD --max_iter=MAXIMUM_ITERATIONS --tol=TOLERANCE]
+python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=REF_FILE --ld_file=LD_MATRIX_FILE --out_dir=OUTPUT_DIR --out_name=OUTPUT_FILENAME --chr=CHR --bp=BP --chr_col=CHR_COL --snp_col=SNP_COL --bp_col=BP_COL --a1_col=A1_COL --a2_col=A2_COL --eff_col=EFF_COL --se_col=SE_COL --pval_col=PVAL_COL --plink=PLINK [--keep-ambig=KEEP_AMBIGUOUS_SNPS --maf=MAF_THRESHOLD --n_sig=NUMBER_OF_SIGNALS --level=LEVEL --min_purity=MINIMUM_PURITY --mult-step=MULT_STEP_FITTING --pval_thresh=MARGINAL_PVAL_THRESHOLD --max_iter=MAXIMUM_ITERATIONS --tol=TOLERANCE]
 `
 
 - SUM_STATS_FILE (required): Full path and filename of the GWAS summary statistics for each population, separated by comma. Each file must contain a header line. The column corresponding to the effect size estimates must have a header of BETA or OR, indicating whether the effect estimates are regression coefficients or odds ratios.
@@ -82,7 +74,7 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=
 
 - MINIMUM_PURITY (optional): Minimum purity of the credible set. Credible sets with purity below this specified value will be filtered out. Default is 0.5.
 
-- TWO_STEP_FITTING (optional): Use the two-step modeling fitting approach. In the second run, maximum number of signals is set to the number of credible sets identified in the first run, and minimum purity of the credible set is set to zero. Default is False.
+- MULT_STEP_FITTING (optional): Use the multi-step modeling fitting approach. The model is first fitted using 5 signals. If the algorithm doesn't converge, the maximum number of signals is progressively reduced from 5 to 1 until convergence. If 5 credible sets are identified, the maximum number of signals is increased to 10. If the algorithm doesn't converge with 10 signals, the maximum number of signals is then progressively reduced from 10 to 5 until convergence.
 
 - MARGINAL_PVAL_THRESHOLD (optional): Filtering threshold for the marginal p-value. Credible sets containing no marginal p-value below this specified value will be filtered out. Default is 1e-05.
 
@@ -122,7 +114,7 @@ Otherwise, the `.summary` file contains credible set level information, which ha
 
 - SE: The standard error of the marginal per-allele effect size of the MAX_PIP_SNP in each population, separated by comma.
 
-- PVAL: Marginal p-value of the MAX_PIP_SNP in each population, separated by comma.
+- -LOG10P: -log10 of the marginal p-value of the MAX_PIP_SNP in each population, separated by comma.
 
 - MAX_PIP: Maximum posterior inclusion probability (PIP) in the credible set.
 
@@ -145,7 +137,7 @@ The `.cs` file contains information for all the SNPs included in credible sets a
 
 - SE: The standard error of the marginal per-allele effect size of the SNP in each population, separated by comma.
 
-- PVAL: Marginal p-value of the SNP in each population, separated by comma.
+- -LOG10P: -log10 of the marginal p-value of the SNP in each population, separated by comma.
 
 - CS_PIP: Posterior inclusion probability (PIP) of the SNP.
 
@@ -162,7 +154,6 @@ python SuSiEx.py \
     --ld_file=${ld_eur},${ld_afr} \
     --out_dir=${out_dir} \
     --out_name=${out_name} \
-    --sim=False \
     --chr=1 \
     --bp=94813205,95812998 \
     --chr_col=1,1 \
@@ -174,6 +165,7 @@ python SuSiEx.py \
     --se_col=9,9 \
     --pval_col=10,10 \
     --keep-ambig=False \
+    --mult-step=True \
     --maf=0.01 \
     --plink=${plink_dir}/plink_v1.90
 ```
