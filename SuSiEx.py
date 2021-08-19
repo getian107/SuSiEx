@@ -9,7 +9,7 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=
                  --chr=CHR --bp=BP --chr_col=CHR_COL --snp_col=SNP_COL --bp_col=BP_COL --a1_col=A1_COL --a2_col=A2_COL
                  --eff_col=EFF_COL --se_col=SE_COL --pval_col=PVAL_COL --plink=PLINK
 		 [--keep-ambig=KEEP_AMBIGUOUS_SNPS --maf=MAF_THRESHOLD --n_sig=NUMBER_OF_SIGNALS --level=LEVEL --min_purity=MINIMUM_PURITY
-		  --two-step=TWO_STEP_FITTING --pval_thresh=MARGINAL_PVAL_THRESHOLD --max_iter=MAXIMUM_ITERATIONS --tol=TOLERANCE]
+		  --mult-step=MULT_STEP_FITTING --pval_thresh=MARGINAL_PVAL_THRESHOLD --max_iter=MAXIMUM_ITERATIONS --tol=TOLERANCE]
 
 """
 
@@ -29,12 +29,12 @@ def parse_param():
     long_opts_list = ['sst_file=', 'n_gwas=', 'ref_file=', 'ld_file=', 'out_dir=', 'out_name=',
                       'chr=', 'bp=', 'chr_col=', 'snp_col=', 'bp_col=', 'a1_col=', 'a2_col=',
                       'eff_col=', 'se_col=', 'pval_col=', 'plink=', 'keep-ambig=', 'maf=',
-		      'n_sig=', 'level=', 'min_purity=', 'two-step=', 'pval_thresh=', 'max_iter=', 'tol=', 'help']
+		      'n_sig=', 'level=', 'min_purity=', 'mult-step=', 'pval_thresh=', 'max_iter=', 'tol=', 'help']
 
     param_dict = {'sst_file': None, 'n_gwas': None, 'ref_file': None, 'ld_file': None, 'out_dir': None, 'out_name': None,
                   'chr': None, 'bp': None, 'chr_col': None, 'snp_col': None, 'bp_col': None, 'a1_col': None, 'a2_col': None,
                   'eff_col': None, 'se_col': None, 'pval_col': None, 'plink': None, 'keep-ambig': 'FALSE', 'maf': 0.005,
-		  'n_sig': 10, 'level': 0.95, 'min_purity': 0.5, 'two-step': 'FALSE', 'pval_thresh': 1e-6, 'max_iter': 100, 'tol': 1e-4}
+		  'n_sig': 5, 'level': 0.95, 'min_purity': 0.5, 'mult-step': 'FALSE', 'pval_thresh': 1e-6, 'max_iter': 100, 'tol': 1e-4}
 
     print('\n')
 
@@ -72,7 +72,7 @@ def parse_param():
             elif opt == "--n_sig": param_dict['n_sig'] = int(arg)
             elif opt == "--level": param_dict['level'] = float(arg)
             elif opt == "--min_purity": param_dict['min_purity'] = float(arg)
-            elif opt == "--two-step": param_dict['two-step'] = arg.upper()
+            elif opt == "--mult-step": param_dict['mult-step'] = arg.upper()
             elif opt == "--pval_thresh": param_dict['pval_thresh'] = float(arg)
             elif opt == "--max_iter": param_dict['max_iter'] = int(arg)
             elif opt == "--tol": param_dict['tol'] = float(arg)
@@ -148,9 +148,6 @@ def parse_param():
         sys.exit(2)
     elif param_dict['keep-ambig'] == 'FALSE':
         print('* All ambiguous SNPs will be removed\n')
-    elif param_dict['keep-ambig'] == 'TRUE':
-        print('* Ambiguous SNPs will be retained if A1/A2 in the summary statistics match A1/A2 in the reference panel; ' +
-                 'Use --keep-ambig=False to remove all ambiguous SNPs if not certain about allele matching between summary statistics and the reference\n')
 
 
     for key in param_dict:
@@ -189,19 +186,38 @@ def main():
             parse_genet.clean_files(param_dict['ld_file'][pp])
 
 
-    alpha, b, b_sq, sigma_sq, elbo_new, n_iter, flag = \
-	SuSiE.SUSIE_sst_xethn(beta, ind, param_dict['n_gwas'], ld, tau_sq, param_dict['n_sig'], param_dict['max_iter'], param_dict['tol'])
-
-    n_cs, alpha, cs_bin, cs_purity, pip = \
-	parse_pip.pip(flag, alpha, ld, pval_min, param_dict['level'], param_dict['min_purity'], param_dict['pval_thresh'])
-
-    if param_dict['two-step'] == 'TRUE':
-        print('* Two-step model fitting')
+    if param_dict['mult-step'] == 'FALSE':
         alpha, b, b_sq, sigma_sq, elbo_new, n_iter, flag = \
-            SuSiE.SUSIE_sst_xethn(beta, ind, param_dict['n_gwas'], ld, tau_sq, n_cs, param_dict['max_iter'], param_dict['tol'])
+	    SuSiE.SUSIE_sst_xethn(beta, ind, param_dict['n_gwas'], ld, tau_sq, param_dict['n_sig'], param_dict['max_iter'], param_dict['tol'])
 
         n_cs, alpha, cs_bin, cs_purity, pip = \
-            parse_pip.pip(flag, alpha, ld, pval_min, param_dict['level'], 0.0, param_dict['pval_thresh'])
+            parse_pip.pip(flag, alpha, ld, pval_min, param_dict['level'], param_dict['min_purity'], param_dict['pval_thresh'])
+
+    elif param_dict['mult-step'] == 'TRUE':
+        print('* Mult-step model fitting *')
+
+        alpha, b, b_sq, sigma_sq, elbo_new, n_iter, flag = \
+            SuSiE.SUSIE_sst_xethn(beta, ind, param_dict['n_gwas'], ld, tau_sq, 5, param_dict['max_iter'], param_dict['tol'])
+
+        if flag == True:
+            n_cs, alpha, cs_bin, cs_purity, pip = \
+                parse_pip.pip(flag, alpha, ld, pval_min, param_dict['level'], param_dict['min_purity'], param_dict['pval_thresh'])
+
+        if flag == True and n_cs == 5:
+            n_cs = 11
+            flag = False
+        elif flag == False:
+            n_cs = 5
+
+        while flag == False:
+            n_cs = n_cs-1
+
+            alpha, b, b_sq, sigma_sq, elbo_new, n_iter, flag = \
+                 SuSiE.SUSIE_sst_xethn(beta, ind, param_dict['n_gwas'], ld, tau_sq, n_cs, param_dict['max_iter'], param_dict['tol'])
+
+            if flag == True:
+                n_cs, alpha, cs_bin, cs_purity, pip = \
+                    parse_pip.pip(flag, alpha, ld, pval_min, param_dict['level'], param_dict['min_purity'], param_dict['pval_thresh'])
 
 
     write_cs.write_cs(param_dict['chr'], param_dict['bp'], n_pop, n_cs, snp_dict, beta, ind, pval, logp, param_dict['n_gwas'], 

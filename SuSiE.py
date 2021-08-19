@@ -12,7 +12,7 @@ import SER
 
 
 def SUSIE_sst_xethn(beta, ind, n, D, tau_sq, l, max_iter, tol):
-    print('... fit SuSiEx model ...')
+    print('... fit SuSiEx model with %i signals...' % l)
 
     (p,s) = sp.shape(beta)
 
