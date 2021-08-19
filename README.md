@@ -62,7 +62,7 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=
 
 - PLINK (required): The full path and filename of PLINK.
 
-- KEEP_AMBIGUOUS_SNPS (optional): If False, all ambiguous SNPs (A/T and G/C SNPs) will be removed; if True, ambiguous SNPs with A1 and A2 matching exactly with the A1 and A2 in the reference panel will be retained. Default is False.
+- KEEP_AMBIGUOUS_SNPS (optional): If False, all ambiguous SNPs (A/T and G/C SNPs) will be removed; if True, ambiguous SNPs whose A1 and A2 can be matched with the A1 and A2 in the reference panel via allele flip will be retained. Default is False.
 
 - MAF_THRESHOLD (optional): Minor allele frequency (MAF) threshold applied to the reference panel. Default is 0.005.
 
