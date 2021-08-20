@@ -66,7 +66,7 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=
 
 - MAF_THRESHOLD (optional): Minor allele frequency (MAF) threshold applied to the reference panel. Default is 0.005.
 
-- NUMBER_OF_SIGNALS (optional): Maximum number of causal signals in the SuSiEx model. Default is 10.
+- NUMBER_OF_SIGNALS (optional): Maximum number of causal signals in the SuSiEx model. Default is 5.
 
 - LEVEL (optional): Coverage level of the credible set. Default is 95%.
 
