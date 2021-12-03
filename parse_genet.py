@@ -302,7 +302,7 @@ def clean_files(ld_file):
     subprocess.check_output('rm '+ld_file+'_ref.log', shell=True)
     subprocess.check_output('rm '+ld_file+'_frq.frq', shell=True)
     subprocess.check_output('rm '+ld_file+'_frq.log', shell=True)
-    subprocess.check_output('rm '+ld_file+'.ld', shell=True)
+    subprocess.check_output('rm '+ld_file+'.ld.gz', shell=True)
     subprocess.check_output('rm '+ld_file+'.log', shell=True)
 
 
