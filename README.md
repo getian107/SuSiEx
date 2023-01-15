@@ -32,9 +32,9 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=
 
 - GWAS_SAMPLE_SIZE (required): Sample size of the GWAS for each population, in the order corresponding to the GWAS summary statistics files, separated by comma.
 
-- REF_FILE (required): Full path and filename prefix of the reference panel for each population in PLINK binary format (.bed/.bim/.fam), in the order corresponding to the GWAS summary statistics files, separated by comma. The format for SNP IDs (e.g., rs IDs or chr:bp:a1:a2) and version of genome build must be consistent across GWAS summary statistics files and reference panels. A curated 1000 Genomes phase 3 reference panle in PLINK format can be download from the MAGMA website: https://ctg.cncr.nl/software/magma.
+- REF_FILE (optional): Full path and filename prefix of the reference panel for each population in PLINK binary format (.bed/.bim/.fam), in the order corresponding to the GWAS summary statistics files, separated by comma. The format for SNP IDs (e.g., rs IDs or chr:bp:a1:a2) and version of genome build must be consistent across GWAS summary statistics files and reference panels. A curated 1000 Genomes phase 3 reference panle in PLINK format can be download from the MAGMA website: https://ctg.cncr.nl/software/magma.
 
-- LD_MATRIX_FILE (required): Full path and filename prefix of the LD matrix to be computed from the reference panels for each population, in the order corresponding to the GWAS summary statistics files, separated by comma.
+- LD_MATRIX_FILE (required): Full path and filename prefix of the LD matrix to be computed from the reference panels for each population, in the order corresponding to the GWAS summary statistics files, separated by comma. If LD matrices with the specified filenames already exist in the specified directory, the calculation of LD will be skipped and existing LD files will be used directly.
 
 - OUTPUT_DIR (required): Full path of the output directory.
 
