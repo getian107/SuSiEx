@@ -9,7 +9,7 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=
                  --chr=CHR --bp=BP --chr_col=CHR_COL --snp_col=SNP_COL --bp_col=BP_COL --a1_col=A1_COL --a2_col=A2_COL
                  --eff_col=EFF_COL --se_col=SE_COL --pval_col=PVAL_COL --plink=PLINK
 		 [--keep-ambig=KEEP_AMBIGUOUS_SNPS --maf=MAF_THRESHOLD --n_sig=NUMBER_OF_SIGNALS --level=LEVEL --min_purity=MINIMUM_PURITY
-		  --mult-step=MULT_STEP_FITTING --pval_thresh=MARGINAL_PVAL_THRESHOLD --max_iter=MAXIMUM_ITERATIONS --tol=TOLERANCE]
+		  --mult-step=MULT_STEP_FITTING --full_out=FULL_OUTPUT --pval_thresh=MARGINAL_PVAL_THRESHOLD --max_iter=MAXIMUM_ITERATIONS --tol=TOLERANCE]
 
 """
 
@@ -29,12 +29,12 @@ def parse_param():
     long_opts_list = ['sst_file=', 'n_gwas=', 'ref_file=', 'ld_file=', 'out_dir=', 'out_name=',
                       'chr=', 'bp=', 'chr_col=', 'snp_col=', 'bp_col=', 'a1_col=', 'a2_col=',
                       'eff_col=', 'se_col=', 'pval_col=', 'plink=', 'keep-ambig=', 'maf=',
-		      'n_sig=', 'level=', 'min_purity=', 'mult-step=', 'pval_thresh=', 'max_iter=', 'tol=', 'help']
+		      'n_sig=', 'level=', 'min_purity=', 'mult-step=', 'full_out=', 'pval_thresh=', 'max_iter=', 'tol=', 'help']
 
     param_dict = {'sst_file': None, 'n_gwas': None, 'ref_file': None, 'ld_file': None, 'out_dir': None, 'out_name': None,
                   'chr': None, 'bp': None, 'chr_col': None, 'snp_col': None, 'bp_col': None, 'a1_col': None, 'a2_col': None,
                   'eff_col': None, 'se_col': None, 'pval_col': None, 'plink': None, 'keep-ambig': 'FALSE', 'maf': 0.005,
-		  'n_sig': 5, 'level': 0.95, 'min_purity': 0.5, 'mult-step': 'FALSE', 'pval_thresh': 1e-6, 'max_iter': 100, 'tol': 1e-4}
+		  'n_sig': 5, 'level': 0.95, 'min_purity': 0.5, 'mult-step': 'FALSE', 'full_out': 'FALSE', 'pval_thresh': 1e-6, 'max_iter': 100, 'tol': 1e-4}
 
     print('\n')
 
@@ -73,6 +73,7 @@ def parse_param():
             elif opt == "--level": param_dict['level'] = float(arg)
             elif opt == "--min_purity": param_dict['min_purity'] = float(arg)
             elif opt == "--mult-step": param_dict['mult-step'] = arg.upper()
+            elif opt == "--full_out": param_dict['full_out'] = arg.upper()
             elif opt == "--pval_thresh": param_dict['pval_thresh'] = float(arg)
             elif opt == "--max_iter": param_dict['max_iter'] = int(arg)
             elif opt == "--tol": param_dict['tol'] = float(arg)
@@ -112,6 +113,9 @@ def parse_param():
     if param_dict['precmp'] == False and (param_dict['ref_file'] == None or len(param_dict['ref_file']) != n_pop):
         print('* Please provide precomputed LD and frequency files or a reference panel for each GWAS using --ref-file\n')
         sys.exit(2)
+    elif param_dict['precmp'] == False and param_dict['plink'] == None:
+        print('* Please provide the directory and filename of PLINK using --plink\n')
+        sys.exit(2)
     elif param_dict['chr'] == None:
         print('* Please provide the chromosome code of the fine-mapping region using --chr\n')
         sys.exit(2)
@@ -142,9 +146,6 @@ def parse_param():
         sys.exit(2)
     elif param_dict['pval_col'] == None or len(param_dict['pval_col']) != n_pop:
         print('* Please provide the column number of the p-value in each GWAS summary statistics file using --pval_col\n')
-        sys.exit(2)
-    elif param_dict['plink'] == None:
-        print('* Please provide the directory and filename of PLINK using --plink\n')
         sys.exit(2)
     elif param_dict['keep-ambig'] == 'FALSE':
         print('* All ambiguous SNPs will be removed\n')
@@ -221,7 +222,7 @@ def main():
 
 
     write_cs.write_cs(param_dict['chr'], param_dict['bp'], n_pop, n_cs, snp_dict, beta, ind, pval, logp, param_dict['n_gwas'], 
-        alpha, cs_bin, cs_purity, pip, param_dict['out_dir'], param_dict['out_name'])
+        alpha, cs_bin, cs_purity, pip, param_dict['out_dir'], param_dict['out_name'], param_dict['full_out'])
 
 
     print('... Done ...\n')

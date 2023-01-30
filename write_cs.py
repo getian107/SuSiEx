@@ -19,7 +19,7 @@ def list2txt(xx):
     return ','.join(xx)
 
 
-def write_cs(reg_chr, reg_bp, n_pop, n_cs, snp_dict, beta, ind, pval, logp, n, alpha, cs_bin, cs_purity, pip, out_dir, out_name):
+def write_cs(reg_chr, reg_bp, n_pop, n_cs, snp_dict, beta, ind, pval, logp, n, alpha, cs_bin, cs_purity, pip, out_dir, out_name, full_out):
 
     print('... write credible sets to file: %s ...' % (out_dir + '/' + out_name + '.summary/.cs/.snp'))
 
@@ -45,7 +45,11 @@ def write_cs(reg_chr, reg_bp, n_pop, n_cs, snp_dict, beta, ind, pval, logp, n, a
                 ('CS_ID', 'CS_LENGTH', 'CS_PURITY', 'MAX_PIP_SNP', 'BP', 'REF_ALLELE', 'ALT_ALLELE', 'REF_FRQ', 'BETA', 'SE', '-LOG10P', 'MAX_PIP'))
 
             for ll in range(n_cs):
-                idx = [jj for jj in range(len(pip)) if cs_bin[jj,ll]]
+                if full_out == 'TRUE':
+                    idx = [jj for jj in range(len(pip))]
+                elif full_out == 'FALSE':
+                    idx = [jj for jj in range(len(pip)) if cs_bin[jj,ll]]
+
                 ind_ll = ind[idx,:]
                 snp = [snp_dict['SNP'][jj] for jj in idx]
                 bp = [snp_dict['BP'][jj] for jj in idx]
@@ -60,7 +64,7 @@ def write_cs(reg_chr, reg_bp, n_pop, n_cs, snp_dict, beta, ind, pval, logp, n, a
                 ovrl_pip = pip[idx]
 
                 for csid, snp_ll, bp_ll, a1_ll, a2_ll, frq_ll, eff_ll, se_ll, p_ll, cs_pip_ll, ovrl_pip_ll in \
-                    zip([ll+1]*cs_len[ll], snp, bp, a1, a2, frq, eff, se, p, cs_pip, ovrl_pip):
+                    zip([ll+1]*len(idx), snp, bp, a1, a2, frq, eff, se, p, cs_pip, ovrl_pip):
                     ff.write('%i\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%.3f\t%.3f\n' % \
                     (csid, snp_ll, bp_ll, list2txt(a1_ll), list2txt(a2_ll), arr2f(frq_ll), arr2e(eff_ll), arr2e(se_ll), arr2f(p_ll), cs_pip_ll, ovrl_pip_ll))
 
