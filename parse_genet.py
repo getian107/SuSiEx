@@ -101,8 +101,8 @@ def parse_sumstats(sst_file, ref_dict, chrom, bp, chr_col, snp_col, bp_col, a1_c
         header = [col.upper() for col in header]
         for line in ff:
             ll = (line.strip()).split()
-            chr = int(ll[chr_col-1]); snp = ll[snp_col-1]; a1 = ll[a1_col-1]; a2 = ll[a2_col-1]
-            if chr != chrom or a1 not in ATGC or a2 not in ATGC:
+            chr_sst = int(ll[chr_col-1]); snp = ll[snp_col-1]; a1 = ll[a1_col-1]; a2 = ll[a2_col-1]
+            if chr_sst != chrom or a1 not in ATGC or a2 not in ATGC:
                 continue
 
             if (a1=='A' and a2=='T') or (a1=='T' and a2=='A') or (a1=='G' and a2=='C') or (a1=='C' and a2=='G'):
