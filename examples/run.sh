@@ -17,7 +17,7 @@
 	--eff_col=6,6 \
 	--se_col=7,7 \
 	--pval_col=9,9 \
-	--plink=plink \
+	--plink=../utilities/plink \
 	--mult-step=True \
 	--keep-ambig=True \
 	--threads=16

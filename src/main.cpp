@@ -50,8 +50,8 @@ static struct option susiexOption[] =
 
 void susiexHelp()
 {
-	std::cout << "SuSiExCPP" << std::endl;
-	std::cout << "Usage: SuSiExCPP <[options]>" << std::endl;
+	std::cout << "SuSiEx" << std::endl;
+	std::cout << "Usage: SuSiEx <[options]>" << std::endl;
 	std::cout << "Options:" << std::endl;
 	std::cout << "\t--sst_file      /  -s       SUM_STATS_FILE (required): Full path and filename of the GWAS summary statistics for each population, separated by comma. Each file must contain a header line. The column corresponding to the effect size estimates must have a header of BETA or OR, indicating whether the effect estimates are regression coefficients or odds ratios." << std::endl;
 	std::cout << "\t--n_gwas        /  -n       GWAS_SAMPLE_SIZE (required): Sample size of the GWAS for each population, in the order corresponding to the GWAS summary statistics files, separated by comma." << std::endl;
@@ -79,7 +79,7 @@ void susiexHelp()
 	std::cout << "\t--pval_thresh   /  -a       MARGINAL_PVAL_THRESHOLD (optional): Filtering threshold for the marginal p-value. Credible sets containing no marginal p-value below this specified value will be filtered out. Default is 1e-05." << std::endl;
 	std::cout << "\t--max_iter      /  -I       MAXIMUM_ITERATIONS (optional): Maximum number of iterations allowed for the model fitting algorithm. Default is 100." << std::endl;
 	std::cout << "\t--tol           /  -t       TOLERANCE (optional): Tolerance for the convergence of the variational algorithm. Default is 1e-04." << std::endl;
-	std::cout << "\t--threads       /  -X       NUMBER_OF_THREADS (optional): Number of threads. Default is 1." << std::endl;
+	std::cout << "\t--threads       /  -X       N_THREADS (optional): Number of threads for computation. Default is 1." << std::endl;
 	std::cout << "\t--help          /  -h       Print this help." << std::endl;
 	exit(0);
 }

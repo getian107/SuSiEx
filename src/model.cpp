@@ -460,7 +460,7 @@ int susiex::write_cs(int convergent)
 	}
 	else if(par.key_by == 1)
 	{
-		fpsnp << "Pos\tA1\tA2";
+		fpsnp << "BP\tA1\tA2";
 		for(int i = 1 ; i <= ncs; ++i)
 			for(int j = 1; j <= npop; ++j)
 				fpsnp << "\tLogBF(CS" << i << ",Pop" << j << ")";
@@ -483,7 +483,7 @@ int susiex::write_cs(int convergent)
 	}
 	else if(par.key_by == 2)
 	{
-        fpsnp << "Pos\tSNP";
+        fpsnp << "BP\tSNP";
         for(int i = 1 ; i <= ncs; ++i)
         	for(int j = 1; j <= npop; ++j)
         		fpsnp << "\tLogBF(CS" << i << ",Pop" << j << ")";

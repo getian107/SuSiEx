@@ -1,6 +1,6 @@
 # SuSiEx
 
-**SuSiEx** is a Python based command line tool that performs cross-ethnic fine-mapping using GWAS summary statistics and LD reference panels. The method is built on the Sum of Single Effects (SuSiE) model:
+**SuSiEx** is a C++ based command line tool that performs cross-ancestry fine-mapping using GWAS summary statistics and LD reference panels. The method is built on the Sum of Single Effects (SuSiE) model:
 
 Gao Wang, Abhishek Sarkar, Peter Carbonetto, Matthew Stephens. A simple new approach to variable selection in regression, with application to genetic fine-mapping. *Journal of the Royal Statistical Society: Series B (Statistical Methodology)*, https://doi.org/10.1111/rssb.12388, 2020.
 
@@ -13,20 +13,54 @@ Gao Wang, Abhishek Sarkar, Peter Carbonetto, Matthew Stephens. A simple new appr
 
     Alternatively, download the source files from the github website (https://github.com/getian107/SuSiEx).
     
-- **SuSiEx** requires Python package **scipy** (https://www.scipy.org/) installed.
+- **SuSiEx** requires C++ compiler **GCC** (https://gcc.gnu.org/) and parallel programming library **OpenMP** (https://www.openmp.org/) installed.
 
-- Once Python and its dependencies have been installed, running
+- Compile SuSiEx using the following command:
+   
+    `cd src`
+   
+    `make all`
 
-    `./SuSiEx.py --help` or `./SuSiEx.py -h`
+- Once the compling is done, the executable SuSiEx will be found in the _bin_ folder. Type 
+
+    `../bin/SuSiEx --help` or `../bin/SuSiEx -h`
 
     will print a list of command-line options.
 
 
 ## Using SuSiEx
 
-`
-python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=REF_FILE --ld_file=LD_MATRIX_FILE --out_dir=OUTPUT_DIR --out_name=OUTPUT_FILENAME --chr=CHR --bp=BP --chr_col=CHR_COL --snp_col=SNP_COL --bp_col=BP_COL --a1_col=A1_COL --a2_col=A2_COL --eff_col=EFF_COL --se_col=SE_COL --pval_col=PVAL_COL --plink=PLINK [--keep-ambig=KEEP_AMBIGUOUS_SNPS --maf=MAF_THRESHOLD --n_sig=NUMBER_OF_SIGNALS --level=LEVEL --min_purity=MINIMUM_PURITY --mult-step=MULT_STEP_FITTING --full_out=FULL_OUTPUT --pval_thresh=MARGINAL_PVAL_THRESHOLD --max_iter=MAXIMUM_ITERATIONS --tol=TOLERANCE]
-`
+```
+SuSiEx \
+  --sst_file=SUM_STATS_FILE \ 
+  --n_gwas=GWAS_SAMPLE_SIZE \ 
+  --ref_file=REF_FILE \ 
+  --ld_file=LD_MATRIX_FILE \ 
+  --out_dir=OUTPUT_DIR \ 
+  --out_name=OUTPUT_FILENAME \ 
+  --chr=CHR \ 
+  --bp=BP \ 
+  --chr_col=CHR_COL \ 
+  --snp_col=SNP_COL \ 
+  --bp_col=BP_COL \ 
+  --a1_col=A1_COL \ 
+  --a2_col=A2_COL \ 
+  --eff_col=EFF_COL \ 
+  --se_col=SE_COL \ 
+  --pval_col=PVAL_COL \ 
+  --plink=PLINK \ 
+  [ --keep-ambig=KEEP_AMBIGUOUS_SNPS \ ]
+  [ --maf=MAF_THRESHOLD \ ]
+  [ --n_sig=NUMBER_OF_SIGNALS \ ]
+  [ --level=LEVEL \ ]
+  [ --min_purity=MINIMUM_PURITY \ ]
+  [ --mult-step=MULT_STEP_FITTING \ ]
+  [ --full_out=FULL_OUTPUT \ ]
+  [ --pval_thresh=MARGINAL_PVAL_THRESHOLD \ ]
+  [ --max_iter=MAXIMUM_ITERATIONS \ ]
+  [ --tol=TOLERANCE \ ]
+  [ --threads=N_THREADS ]
+```
 
 - SUM_STATS_FILE (required): Full path and filename of the GWAS summary statistics for each population, separated by comma. Each file must contain a header line. The column corresponding to the effect size estimates must have a header of BETA or OR, indicating whether the effect estimates are regression coefficients or odds ratios.
 
@@ -34,7 +68,7 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=
 
 - REF_FILE (optional): Full path and filename prefix of the reference panel for each population in PLINK binary format (.bed/.bim/.fam), in the order corresponding to the GWAS summary statistics files, separated by comma. The format for SNP IDs (e.g., rs IDs or chr:bp:a1:a2) and version of genome build must be consistent across GWAS summary statistics files and reference panels. A curated 1000 Genomes phase 3 reference panle in PLINK format can be download from the MAGMA website: https://ctg.cncr.nl/software/magma.
 
-- LD_MATRIX_FILE (required): Full path and filename prefix of the LD matrix to be computed from the reference panels for each population, in the order corresponding to the GWAS summary statistics files, separated by comma. If LD matrices with the specified filenames already exist in the specified directory, the calculation of LD will be skipped and existing LD files will be used directly. A script for precomputing LD matrices and allele frequency files is [available](https://www.dropbox.com/s/lyh7cwaabm8sxw7/SuSiEx_LD.py?dl=0 "available").
+- LD_MATRIX_FILE (required): Full path and filename prefix of the LD matrix to be computed from the reference panels for each population, in the order corresponding to the GWAS summary statistics files, separated by comma. If LD matrices with the specified filenames already exist in the specified directory, the calculation of LD will be skipped and existing LD files will be used directly. A script for precomputing LD matrices and allele frequency files is available in the utilities folder.
 
 - OUTPUT_DIR (required): Full path of the output directory.
 
@@ -54,7 +88,7 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=
 
 - A2_COL (required): The column number of the A2 allele (alternative allele) in each GWAS summary statistics file, separated by comma.
 
-- EFF_COL (required): The column number of the effect size estimate (beta or odds ratio) in each GWAS summary statistics file, separated by comma.
+- EFF_COL (required): The column number of the effect size estimate (beta or odds ratio) in each GWAS summary statistics file, separated by comma. SuSiEx will automatically recognize columns labeled with a prefix of "beta" as beta and a prefix of "or" as odds ratio (case-insensitive).
 
 - SE_COL (required): The column number of the standard error of the effect size estimate in each GWAS summary statistics file, separated by comma.
 
@@ -82,12 +116,12 @@ python SuSiEx.py --sst_file=SUM_STATS_FILE --n_gwas=GWAS_SAMPLE_SIZE --ref_file=
 
 - TOLERANCE (optional): Tolerance for the convergence of the variational algorithm. Default is 1e-04.
 
+- N_THREADS (optional): Number of threads for computation. Default is 1.
+
 
 ## Output
 
 A `.summary` file, a `.cs` file and a `.snp` file will be written to the specified output directory.
-The `.snp` file contains a list of SNPs that are used in the fine-mapping algorithm.
-These are the SNPs that are located in the specified fine-mapping region, available in the GWAS summary statistics and the reference panel for at least one population, and survived the minor allele frequency filtering.
 
 If the varitional algorithm did not converge, "FAIL" will be written to both the `.summary` file and the `.cs` file.
 If no credible set was identified at the specified coverage level after purity and marginal p-value filtering, "NULL" will be written to both the `.summary` file and the `.cs` file.
@@ -118,8 +152,9 @@ Otherwise, the `.summary` file contains credible set level information, which ha
 
 - MAX_PIP: Maximum posterior inclusion probability (PIP) in the credible set.
 
+- POST-HOC_PROB_POP${i}: _Post hoc_ probability credible set manifest causal in population ${i}.
 
-The `.cs` file contains information for all the SNPs included in credible sets (if `--full_out=False`) or all the SNPs included in fine-mapping (if `--full_out=True`), and has the following columns:
+The `.cs` file contains information for all the SNPs included in credible sets and has the following columns:
 
 - CS_ID: ID of the credible set.
 
@@ -143,35 +178,49 @@ The `.cs` file contains information for all the SNPs included in credible sets (
 
 - OVRL_PIP: Posterior inclusion probability (PIP) of the SNP in any of the credible set.
 
+The `.snp` file contains information for all the SNPs that are used in the fine-mapping algorithm.
+These are the SNPs that are located in the specified fine-mapping region, available in the GWAS summary statistics and the reference panel for at least one population, and survived the minor allele frequency filtering.
+It has the following columns:
+
+- BP: The base pair coordinate of the SNP.
+
+- SNP: SNP identifier.
+
+- LogBF(CS${i},Pop${j}): The Logarithm of Bayes factor for credible set ${i}, population ${j}. If the variational algorithm successfully converges and credible sets remain after the purity and marginal p-value filtering, the output will include column(s) of Logarithm of Bayes Factor for each population and credible set.
+
 
 ## Example
 
 ```
-python SuSiEx.py \
-    --sst_file=${sst_eur},${sst_afr} \
-    --n_gwas=${n_eur},${n_afr} \
-    --ref_file=${ref_eur},${ref_afr} \
-    --ld_file=${ld_eur},${ld_afr} \
-    --out_dir=${out_dir} \
-    --out_name=${out_name} \
-    --chr=1 \
-    --bp=94813205,95812998 \
-    --chr_col=1,1 \
-    --snp_col=2,2 \
-    --bp_col=3,3 \
-    --a1_col=4,4 \
-    --a2_col=5,5 \
-    --eff_col=8,8 \
-    --se_col=9,9 \
-    --pval_col=10,10 \
-    --keep-ambig=False \
-    --mult-step=True \
-    --maf=0.01 \
-    --plink=${plink_dir}/plink_v1.90
+cd eamples
+../bin/SuSiEx \
+	--sst_file=EUR.sumstats.txt,AFR.sumstats.txt \
+	--n_gwas=50000,50000 \
+	--ref_file=EUR,AFR \
+	--ld_file=EUR,AFR \
+	--out_dir=./ \
+	--out_name=SuSiEx.EUR.AFR.output.cs95 \
+	--level=0.95 \
+	--pval_thresh=1e-5 \
+	--maf=0.005
+	--chr=1 \
+	--bp=7314654,8314677 \
+	--snp_col=2,2 \
+	--chr_col=1,1 \
+	--bp_col=3,3 \
+	--a1_col=4,4 \
+	--a2_col=5,5 \
+	--eff_col=6,6 \
+	--se_col=7,7 \
+	--pval_col=9,9 \
+	--plink=../utilities/plink \
+	--mult-step=True \
+	--keep-ambig=True \
+	--threads=16
 ```
 
 
 ## Support
 
-Please direct questions or bug reports to Tian Ge (tge1@mgh.harvard.edu).
+Please direct questions or bug reports to Kai Yuan (kyuan@broadinstitute.org) and Tian Ge (tge1@mgh.harvard.edu).
 
