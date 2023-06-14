@@ -228,7 +228,7 @@ int susiex::iter()
 		return 0;
 	}
 
-	if(isnan(elbo_new))
+	if(std::isnan(elbo_new))
 		return -1;
 	else if(fabs(elbo_new - elbo_old) < par.tol)
 		return 1;
@@ -328,7 +328,7 @@ int susiex::cal_pip()
 {
 	int snp_pop(nsnp * npop);
 	for(int i = 0 ; i < snp_pop; ++i)
-		if(isnan(alpha[i]))
+		if(std::isnan(alpha[i]))
 		{
 			ncs = 0;
 			return ncs;

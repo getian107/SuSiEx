@@ -310,7 +310,7 @@ void dataset::load(const softpar & par)
 					cur.beta = eff / se / nsqrt;
 				else
 					cur.beta = log(eff) / se / nsqrt;
-				if(isnan(cur.beta))
+				if(std::isnan(cur.beta))
 				{
 					std::cerr << "Error: Effect size of Line " << count + 1<< \
 							" is not a number (NAN)" << std::endl;
@@ -580,7 +580,7 @@ void dataset::load(const softpar & par)
 						//std::cout << ld[0][0][0] << std::endl;
 						//std::cout << curLD[0] << std::endl;
 						//std::cout << curLD << std::endl;
-						if(isnan(ldbuff[p]))
+						if(std::isnan(ldbuff[p]))
 							curLD[curAlign[k]] = 0;
 						else
 							curLD[curAlign[k]] = ldbuff[p];
