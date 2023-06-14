@@ -55,7 +55,6 @@ SuSiEx \
   [ --level=LEVEL \ ]
   [ --min_purity=MINIMUM_PURITY \ ]
   [ --mult-step=MULT_STEP_FITTING \ ]
-  [ --full_out=FULL_OUTPUT \ ]
   [ --pval_thresh=MARGINAL_PVAL_THRESHOLD \ ]
   [ --max_iter=MAXIMUM_ITERATIONS \ ]
   [ --tol=TOLERANCE \ ]
@@ -107,8 +106,6 @@ SuSiEx \
 - MINIMUM_PURITY (optional): Minimum purity of the credible set. Credible sets with purity below this specified value will be filtered out. Default is 0.5.
 
 - MULT_STEP_FITTING (optional): Use the multi-step modeling fitting approach. The model is first fitted using 5 signals. If the algorithm doesn't converge, the maximum number of signals is progressively reduced from 5 to 1 until convergence. If 5 credible sets are identified, the maximum number of signals is increased to 10. If the algorithm doesn't converge with 10 signals, the maximum number of signals is then progressively reduced from 10 to 5 until convergence. Default is False.
-
-- FULL_OUTPUT (optional): Include all the SNPs used in fine-mapping in the output `.cs` file (see below), in contrast to only including SNPs in the inferred credible sets.
 
 - MARGINAL_PVAL_THRESHOLD (optional): Filtering threshold for the marginal p-value. Credible sets containing no marginal p-value below this specified value will be filtered out. Default is 1e-05.
 
