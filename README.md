@@ -20,6 +20,7 @@ Gao Wang, Abhishek Sarkar, Peter Carbonetto, Matthew Stephens. A simple new appr
     `cd src`
    
     `make all`
+- Or try the static compiled version, which is available in the _bin_static_ folder.
 
 - Once the compling is done, the executable SuSiEx will be found in the _bin_ folder. Type 
 
