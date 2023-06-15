@@ -335,35 +335,34 @@ int susiex::cal_pip()
 		}
 
 	csVar::ncs = nsig;
-	std::vector<csVar> cs;
-	cs.resize(nsnp);
+	csDetails.resize(nsnp);
 	std::vector<double> sumPIP;
 	sumPIP.resize(nsig, 0);
 	for(int i = 0 ; i < nsig ; ++i)
 	{
 		for(int j = 0 ; j < nsnp; ++j)
 		{
-			cs[j].alpha[i] = alpha[i * nsnp + j];
-			sumPIP[i] += cs[j].alpha[i];
+			csDetails[j].alpha[i] = alpha[i * nsnp + j];
+			sumPIP[i] += csDetails[j].alpha[i];
 		}
 	}
 	for(int i = 0 ; i < nsnp; ++i)
-		cs[i].idx = i;
+		csDetails[i].idx = i;
 	csset.clear();
 	csset.resize(nsig);
 	//std::cout << par.level << std::endl;
 	for(int i = 0 ; i < nsig; ++i)
 	{
 		csVar::key = i;
-		sort(cs.begin(), cs.end(), cmp_csVar_alpha);
+		sort(csDetails.begin(), csDetails.end(), cmp_csVar_alpha);
 		double acc(0);
 		for(int j = 0 ; j < nsnp; ++j)
-			cs[j].alpha[i] /= sumPIP[i];
+			csDetails[j].alpha[i] /= sumPIP[i];
 		for(int j = 0 ; j < nsnp; ++j)
 		{
-			double cur(cs[j].alpha[i]);
+			double cur(csDetails[j].alpha[i]);
 			acc += cur;
-			csset[i].idx.push_back(cs[j].idx);
+			csset[i].idx.push_back(csDetails[j].idx);
 			csset[i].alpha.push_back(cur);
 			if(acc > par.level)
 				break;
@@ -410,8 +409,9 @@ int susiex::cal_pip()
 	memset(pip, 0, sizeof(double) * nsnp);
 	if(ncs)
 		for(int i = 0 ; i < nsnp; ++i)
-			pip[cs[i].idx] = cs[i].pip_overall(csset);
+			pip[csDetails[i].idx] = csDetails[i].pip_overall(csset);
 
+	sort(csDetails.begin(), csDetails.end(), cmp_csVar_key);
 	return ncs;
 }
 
@@ -438,9 +438,12 @@ int susiex::write_cs(int convergent)
 	if(par.key_by == 0)
 	{
 		fpsnp << "SNP";
-		for(int i = 1 ; i <= ncs; ++i)
-			for(int j = 1; j <= npop; ++j)
-				fpsnp << "\tLogBF(CS" << i << ",Pop" << j << ")";
+        for(int i = 1 ; i <= ncs; ++i)
+        {
+        	fpsnp << "\tPIP(CS" << i << ")";
+        	for(int j = 1; j <= npop; ++j)
+        		fpsnp << "\tLogBF(CS" << i << ",Pop" << j << ")";
+        }
 		fpsnp << std::endl;
         for(int i = 0 ; i < nsnp; ++i)
         {
@@ -451,8 +454,11 @@ int susiex::write_cs(int convergent)
 				for(int j = 0 ; j < nsig; ++j)
 				{
 					if(!csset[j].fltOut)
+					{
+						fpsnp << '\t' << csDetails[i].alpha[j];
 						for(int k = 0 ; k < npop; ++k)
 							fpsnp << '\t' << logBF[j * pop_snp + k * nsnp + i];
+					}
 				}
 				fpsnp << std::endl;
 			}
@@ -461,9 +467,12 @@ int susiex::write_cs(int convergent)
 	else if(par.key_by == 1)
 	{
 		fpsnp << "BP\tA1\tA2";
-		for(int i = 1 ; i <= ncs; ++i)
-			for(int j = 1; j <= npop; ++j)
-				fpsnp << "\tLogBF(CS" << i << ",Pop" << j << ")";
+        for(int i = 1 ; i <= ncs; ++i)
+        {
+        	fpsnp << "\tPIP(CS" << i << ")";
+        	for(int j = 1; j <= npop; ++j)
+        		fpsnp << "\tLogBF(CS" << i << ",Pop" << j << ")";
+        }
 		fpsnp << std::endl;
         for(int i = 0 ; i < nsnp; ++i)
         {
@@ -474,8 +483,11 @@ int susiex::write_cs(int convergent)
 				for(int j = 0 ; j < nsig; ++j)
 				{
 					if(!csset[j].fltOut)
+					{
+						fpsnp << '\t' << csDetails[i].alpha[j];
 						for(int k = 0 ; k < npop; ++k)
 							fpsnp << '\t' << logBF[j * pop_snp + k * nsnp + i];
+					}
 				}
 				fpsnp << std::endl;
 			}
@@ -485,8 +497,11 @@ int susiex::write_cs(int convergent)
 	{
         fpsnp << "BP\tSNP";
         for(int i = 1 ; i <= ncs; ++i)
+        {
+        	fpsnp << "\tPIP(CS" << i << ")";
         	for(int j = 1; j <= npop; ++j)
         		fpsnp << "\tLogBF(CS" << i << ",Pop" << j << ")";
+        }
         fpsnp << std::endl;
         for(int i = 0 ; i < nsnp; ++i)
         {
@@ -496,9 +511,12 @@ int susiex::write_cs(int convergent)
         		fpsnp << cur.coord.pos << '\t' << cur.coord.id;
         		for(int j = 0 ; j < nsig; ++j)
         		{
-        			if(!csset[j].fltOut)
-        				for(int k = 0 ; k < npop; ++k)
-        					fpsnp << '\t' << logBF[j * pop_snp + k * nsnp + i];
+					if(!csset[j].fltOut)
+					{
+						fpsnp << '\t' << csDetails[i].alpha[j];
+						for(int k = 0 ; k < npop; ++k)
+							fpsnp << '\t' << logBF[j * pop_snp + k * nsnp + i];
+					}
         		}
         		fpsnp << std::endl;
         	}

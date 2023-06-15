@@ -207,6 +207,8 @@ public:
 
 	std::vector<cs> csset;
 
+	std::vector<csVar> csDetails;
+
 private:
 	int init(int max_sig);
 	int iter();
