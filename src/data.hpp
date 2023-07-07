@@ -241,7 +241,7 @@ public:
 	varCoord coord;
 	int idx;
 	double beta;
-	long double pval;
+	double pval, log10p;
 };
 
 inline bool operator<(const sumstats& a, const sumstats& b)
@@ -338,13 +338,13 @@ public:
 		coord = s.coord;
 		idxs[popIdx * 3] = 3;
 		idxs[popIdx * 3 + 1] = s.idx;
-		stats[popIdx * 4] = s.frq;
+		stats[popIdx * 4] = 1 - s.frq;
 	}
 	void set(int popIdx, const ldref& s)
 	{
 		idxs[popIdx * 3] = stat_func(coord, s.coord);
 		idxs[popIdx * 3 + 1] = s.idx;
-		stats[popIdx * 4] = s.frq;
+		stats[popIdx * 4] = 1 - s.frq;
 	}
 	void set_beta(int popIdx, const sumstats& s)
 	{
@@ -359,7 +359,8 @@ public:
 			idxs[popIdx * 3] += 4;
 			idxs[popIdx * 3 + 2] = s.idx;
 			stats[popIdx * 4 + 2] = s.pval;
-			stats[popIdx * 4 + 3] = - log10(s.pval);
+			//stats[popIdx * 4 + 3] = - log10(s.pval);
+			stats[popIdx * 4 + 3] = s.log10p;
 		}
 	}
 	bool var() const
@@ -400,7 +401,10 @@ public:
 
 inline std::ostream & operator << (std::ostream & os, const snp& var)
 {
+	//SNP BP
 	os << var.coord.id << '\t' << var.coord.pos;
+
+	//REF_ALLELE
 	if((var.idxs[0] & 7) == 7)
 		os << '\t' << var.coord.a1;
 	else if((var.idxs[0] & 7) == 5)
@@ -415,6 +419,7 @@ inline std::ostream & operator << (std::ostream & os, const snp& var)
 		else
 			os << ",NA";
 
+	//ALT_ALLELE
 	if((var.idxs[0] & 7) == 7)
 		os << '\t' << var.coord.a2;
 	else if((var.idxs[0] & 7) == 5)
@@ -429,6 +434,7 @@ inline std::ostream & operator << (std::ostream & os, const snp& var)
 		else
 			os << ",NA";
 
+	//REF_FRQ
 	if((var.idxs[0] & 5) == 5)
 		os << '\t' << var.stats[0];
 	else
@@ -439,24 +445,22 @@ inline std::ostream & operator << (std::ostream & os, const snp& var)
 		else
 			os << ",NA";
 
+	//BETA
 	double sqrtfrq(sqrt(2 * var.stats[0] * (1 - var.stats[0])));
-	if((var.idxs[0] & 7) == 7)
+	if((var.idxs[0] & 5) == 5)
 		os << '\t' << var.stats[1] / sqrtfrq;
-	else if((var.idxs[0] & 7) == 5)
-		os << '\t' << - var.stats[1] / sqrtfrq;
 	else
 		os << "\tNA";
 	for(int i = 1 ; i < npop; ++i)
 	{
 		sqrtfrq = sqrt(2 * var.stats[i * 4] * (1 - var.stats[i * 4]));
-		if((var.idxs[i * 3] & 7) == 7)
+		if((var.idxs[i * 3] & 5) == 5)
 			os << ',' << var.stats[i * 4 + 1] / sqrtfrq;
-		else if((var.idxs[i * 3] & 7) == 5)
-			os << ',' << - var.stats[i * 4 + 1] / sqrtfrq;
 		else
 			os << ",NA";
 	}
 
+	//SE
 	sqrtfrq = sqrt(2 * var.stats[0] * (1 - var.stats[0]));
 	if((var.idxs[0] & 5) == 5)
 		os << '\t' << 1.0 / sqrt(snp::par.n_gwas[0]) / sqrtfrq;
@@ -471,6 +475,7 @@ inline std::ostream & operator << (std::ostream & os, const snp& var)
 			os << ",NA";
 	}
 
+	//-LOG10P
 	if((var.idxs[0] & 5) == 5)
 		os << '\t' << var.stats[3];
 	else

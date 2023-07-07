@@ -335,6 +335,7 @@ int susiex::cal_pip()
 		}
 
 	csVar::ncs = nsig;
+	csDetails.clear();
 	csDetails.resize(nsnp);
 	std::vector<double> sumPIP;
 	sumPIP.resize(nsig, 0);

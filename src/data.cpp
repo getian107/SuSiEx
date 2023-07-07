@@ -307,9 +307,15 @@ void dataset::load(const softpar & par)
 				cur.idx = count;
 				double eff(atof(buff[ceff].c_str())), se(atof(buff[cse].c_str()));
 				if(isbeta)
+				{
 					cur.beta = eff / se / nsqrt;
+					cur.log10p = -log10(erfc(fabs(eff/se) * sqrt(0.5)));
+				}
 				else
+				{
 					cur.beta = log(eff) / se / nsqrt;
+					cur.log10p = -log10(erfc(fabs(log(eff)/se) * sqrt(0.5)));
+				}
 				if(std::isnan(cur.beta))
 				{
 					std::cerr << "Error: Effect size of Line " << count + 1<< \
