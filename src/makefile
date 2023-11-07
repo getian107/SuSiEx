@@ -10,6 +10,7 @@ ifeq ($(UNAME_S),Darwin)
 	LDLIBS+=-lomp
 else
 	CXXFLAGS=-fopenmp
+	LDFLAGS+=-fopenmp
 endif
 
 SuSiEx: main.cpp data.o model.o
