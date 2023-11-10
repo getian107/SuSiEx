@@ -1,4 +1,4 @@
-CXXFLAGS=-O3 -Wall -Wextra
+CXXFLAGS=-O3 -Wall -Wextra -flto
 LDFLAGS=-O3 -flto
 
 all: SuSiEx
