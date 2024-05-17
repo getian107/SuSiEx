@@ -331,6 +331,7 @@ int susiex::cal_pip()
 		if(std::isnan(alpha[i]))
 		{
 			ncs = 0;
+			nsig = 0;
 			return ncs;
 		}
 
@@ -430,6 +431,11 @@ int susiex::write_cs(int convergent)
 			}
 			else
 				cs2id.push_back(0);
+	}
+	else
+	{
+		nsig = 0;
+		ncs = 0;
 	}
 	std::cout << "... write credible sets to file: " << par.out_dir << '/' << par.out_name << ".summary/.cs/.snp ..." << std::endl;
 	std::string path;
