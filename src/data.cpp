@@ -86,6 +86,8 @@ void dataset::load(const softpar & par)
 
 			std::ostringstream cmd;
 			cmd << par.plink << " --bfile " << par.ref_file[i] << \
+                    " --threads " << par.nthreads << \
+                    " --memory " << par.plink_mem << \
 					" --keep-allele-order --chr " << par.chr << \
 					" --extract " << par.ld_file[i] << ".snp --maf " << \
 					par.maf << " --make-bed --out " << par.ld_file[i] << "_ref";
@@ -93,12 +95,16 @@ void dataset::load(const softpar & par)
 
 			cmd.str("");
 			cmd << par.plink << " --bfile " << par.ld_file[i] << \
-					"_ref --keep-allele-order --r square bin4 --out " << par.ld_file[i];
+					"_ref --keep-allele-order --r square bin4 --out " << par.ld_file[i] << \
+                    " --threads " << par.nthreads << \
+                    " --memory " << par.plink_mem;
 			system(cmd.str().c_str());
 
 			cmd.str("");
 			cmd << par.plink << " --bfile " << par.ld_file[i] << \
-					"_ref --keep-allele-order --freq --out " << par.ld_file[i] + "_frq";
+					"_ref --keep-allele-order --freq --out " << par.ld_file[i] + "_frq" << \
+                    " --threads " << par.nthreads << \
+                    " --memory " << par.plink_mem;
 			system(cmd.str().c_str());
 			cmd.str("");
 			cmd << "rm " << par.ld_file[i] << ".snp";
