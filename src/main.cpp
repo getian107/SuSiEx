@@ -45,6 +45,7 @@ static struct option susiexOption[] =
 	{"max_iter",		required_argument,	NULL,	'I'},
 	{"tol",				required_argument,	NULL,	't'},
 	{"threads",			required_argument,	NULL,	'X'},
+	{"plink_mem",		required_argument,	NULL,	'K'},
 	{"help",			no_argument,		NULL,	'h'},
 };
 
@@ -80,6 +81,7 @@ void susiexHelp()
 	std::cout << "\t--max_iter      /  -I       MAXIMUM_ITERATIONS (optional): Maximum number of iterations allowed for the model fitting algorithm. Default is 100." << std::endl;
 	std::cout << "\t--tol           /  -t       TOLERANCE (optional): Tolerance for the convergence of the variational algorithm. Default is 1e-04." << std::endl;
 	std::cout << "\t--threads       /  -X       N_THREADS (optional): Number of threads for computation. Default is 1." << std::endl;
+	std::cout << "\t--plink_mem     /  -K       Maximum memory in MB used by PLINK. Default is 5000" << std::endl;
 	std::cout << "\t--help          /  -h       Print this help." << std::endl;
 	exit(0);
 }
@@ -89,7 +91,7 @@ int main(int argc, char **argv)
 	softpar par;
 	if(argc <= 1)
 		susiexHelp();
-	char optstring[] = "s:n:r:l:d:o:c:b:C:S:P:A:B:E:T:V:p:k:m:i:L:u:M:a:I:t:X:h";
+	char optstring[] = "s:n:r:l:d:o:c:b:C:S:P:A:B:E:T:V:p:k:m:i:L:u:M:a:I:t:X:K:h";
 	char opt;
 	std::map<std::string, bool> str2bool;
 	str2bool["True"] = true;
@@ -150,6 +152,7 @@ int main(int argc, char **argv)
 			case 'I': par.max_iter = atol(optarg); break;
 			case 't': par.tol = atof(optarg); break;
 			case 'X': par.nthreads = atol(optarg); break;
+			case 'K': par.plink_mem = atol(optarg); break;
 			case 'h': susiexHelp(); break;
 			case '?': std::cout << "Cannot identify parameter " << opt << std::endl;
 						susiexHelp();
