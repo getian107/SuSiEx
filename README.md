@@ -2,8 +2,13 @@
 
 **SuSiEx** is a C++ based command line tool that performs cross-ancestry fine-mapping using GWAS summary statistics and LD reference panels. The method is built on the Sum of Single Effects (SuSiE) model:
 
-Gao Wang, Abhishek Sarkar, Peter Carbonetto, Matthew Stephens. A simple new approach to variable selection in regression, with application to genetic fine-mapping. *Journal of the Royal Statistical Society: Series B (Statistical Methodology)*, https://doi.org/10.1111/rssb.12388, 2020.
+Wang, G., Sarkar, A., Carbonetto, P. & Stephens, M. A simple new approach to variable selection in regression, with application to genetic fine mapping. *J. R. Stat. Soc. Series B Stat. Methodol.* **82**, 1273–1300 (2020). https://doi.org/10.1111/rssb.12388
 
+## Citation
+
+Our method has been published in *Nature Genetics.* If you use SuSiEx in a published analysis, please cite our article:
+
+Yuan, K., Longchamps, R. J., Pardiñas, A. F., Yu, M., Chen, T.-T., Lin, S.-C., Chen, Y., Lam, M., Liu, R., Xia, Y., Guo, Z., Shi, W., Shen, C., Schizophrenia Workgroup of Psychiatric Genomics Consortium, Daly, M. J., Neale, B. M., Feng, Y.-C. A., Lin, Y.-F., Chen, C.-Y., O’Donovan, M. C., Ge, T. & Huang, H. Fine-mapping across diverse ancestries drives the discovery of putative causal variants underlying human complex traits and diseases. *Nat. Genet.* **56**, 1841–1850 (2024). https://doi.org/10.1038/s41588-024-01870-z
 
 ## Getting Started
 
