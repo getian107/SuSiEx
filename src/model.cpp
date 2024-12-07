@@ -326,8 +326,8 @@ int susiex::ser(int cur_sig)
 
 int susiex::cal_pip()
 {
-	int snp_pop(nsnp * npop);
-	for(int i = 0 ; i < snp_pop; ++i)
+	int snp_pop(nsnp * npop), snp_sig(nsnp * nsig);
+	for(int i = 0 ; i < snp_sig; ++i) // Thanks Siru for catching this bug. for(int i = 0 ; i < snp_pop; ++i)
 		if(std::isnan(alpha[i]))
 		{
 			ncs = 0;
