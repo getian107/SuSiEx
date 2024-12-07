@@ -24,7 +24,7 @@ public:
 	softpar() : out_dir(""), out_name(""), chr(""), start(0), end(0), plink(""), \
 	keep_ambig(false), mult_step(false), precmp(false), maf(0.005), level(0.95), \
 	min_purity(0.5), pth(1e-5), tol(1e-4), n_sig(5), max_iter(100), nthreads(1), \
-	key_by(2) {}
+	plink_mem(5000), key_by(2) {}
 
 	void split_str(const std::string& info, const std::string& label)
 	{
@@ -167,6 +167,7 @@ public:
 		std::cout << "--n_sig = " << n_sig << std::endl;
 		std::cout << "--max_iter = " << max_iter << std::endl;
 		std::cout << "--threads = " << nthreads << std::endl;
+		std::cout << "--plink_mem= " << plink_mem << std::endl;
 
 	}
 
@@ -179,7 +180,7 @@ public:
 	std::string plink;
 	bool keep_ambig, mult_step, precmp;
 	double maf, level, min_purity, pth, tol;
-	int n_sig, max_iter, nthreads;
+	int n_sig, max_iter, nthreads, plink_mem;
 
 	/*
 	 * 0 rsID, 1 position ref / alt, 2 position + rsID
